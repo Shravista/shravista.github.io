@@ -2096,7 +2096,7 @@ input, select, textarea {
 		white-space: nowrap;
 	}
 
-		input[type="submit"].icon:before,
+		input[type="submit"].   icon:before,
 		input[type="reset"].icon:before,
 		input[type="button"].icon:before,
 		button.icon:before,
@@ -2589,6 +2589,9 @@ input, select, textarea {
 
 		.icon.brands:before {
 			font-family: 'Font Awesome 5 Brands';
+		}
+		.icon.free:before {
+		    font-family: 'Font Awesome 5 Free';
 		}
 
 /* Image */
