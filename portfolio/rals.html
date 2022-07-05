@@ -27,7 +27,7 @@
 					<nav id="nav">
 						<ul class="links">
 							<li><a href="../index.html">About Me</a></li>
-							<li class="../active"><a href="portfolio.html">Portfolio</a></li>
+							<li class="active"><a href="../portfolio.html">Portfolio</a></li>
 							<li><a href="../blog.html">Blog</a></li>
 							<li><a href="../pdf.html">CV</a></li>
 						</ul>
@@ -40,39 +40,67 @@
 
 				<!-- Main -->
 					<div id="main">
+					<style>
+					      p.vspace{ 
+                              margin:0;
+                              margin-top:0;
+                              margin-bottom:0;
+                              padding:0;
+                              padding-top:0;
+                              padding-bottom:0;
+                          }
+                          span.text_align {
+                            position: relative;
+                            left: -500px;
+                          }
+                          span.text_align_sp {
+                            position: relative;
+                            left: -390px;
+                          }
+                          span.text_center {
+                            position: relative;
+                            left: 9em;
+                          }
+                          span.li_align {
+                            position: relative;
+                            left: 450px;
+                          }
+                          ol.v_text{
+                             margin:0;
+                              margin-top:0;
+                              margin-bottom:0;
+                              padding:0;
+                              padding-top:0;
+                              padding-bottom:0;
+                          }
+                    </style>
 
 						<!-- Title Post -->
 							<article class="post featured">
-								<header class="major">
-									<h2> This is my<br />
-									Portfolio</h2>
-								</header>
-							</article>
-						
+							    <span class="image main"><img src="../images/RALS_assem.JPG" alt="" /></span>
+								<h2> RALS - Robot Articulated Links Servo System</h2>
+								<p class="vspace" >RALS is a six DoF manipulator equipped with <a href="https://doi.org/10.1109/ACCESS.2015.2433937" target="_blank" rel="noopener noreferrer">three-fingered adaptive grasping gripper </a>. It is a 6R manipulator with spherical wrist configuration. The main purpose of this robot is to act as research tool in exploring various aspects of robotic arm. The important features of the robot are:</p>
+								<ol class="v_text">
+								    <span class="li_align"><li><span class="text_align"> Compact Design</span> </li></span>
+								    <span class="li_align"><li><span class="text_align"> 6R configuration </span></li></span>
+								    <span class="li_align"><li><span class="text_align_sp"> Underactuated three-fingered gripper</span></li></span>
+								</ol>
+								<p class="vspace" > The adaptive grasping <a href="https://doi.org/10.1109/ACCESS.2015.2433937" target="_blank" rel="noopener noreferrer">gripper design </a> with modified gripper's base is shown below.
+							</article>						
 						<!-- sub-posts-->
 						<section class="posts">
-								<article>
-									<header>
-										<h2>Robot Articulated Links<br />
-										Servo System</h2>
-									</header>
-									<a href="#" class="image fit"><img src="images/RALS_assem.JPG" alt="" /></a>
-									<p> Describe Something Here</p>
-									<ul class="actions special">
-										<li><a href="#" class="button">Full Story</a></li>
-									</ul>
-								</article>
-								<article>
-									<header>
-										<h2>StackBot - <br />
-										    Mobile Robot</h2>
-									</header>
-									<a href="#" class="image fit"><img src="images/stackbot_small.png" alt=""/></a>
-									<p>Describe Something here</p>
-									<ul class="actions special">
-										<li><a href="#" class="button">Full Story</a></li>
-									</ul>
-								</article>
+						    <article>
+                                <span class="image main"><img src="../images/RALS_gripper.png" alt="" /></span>
+                                <p style="text-align:center"> The 3D model of gripper </p>
+                            </article>					
+                            <article>
+                                <span class="image main"><img src="../images/RALS_gripper_exploded.JPG" alt="" /></span>
+                                <p style="text-align:center">The exploded view of gripper </p>
+                            </article>
+                        </section>
+                        <article>
+                            <p> The techical details and work progress is updated in the website : <a href="https://sites.google.com/view/rals-robotech/home" target="_blank"  rel="noopener noreferrer">sites.google.com/view/rals-robotech/home </a>.</p>
+                        </article>
 					</div>
 
 				<!-- Copyright -->
