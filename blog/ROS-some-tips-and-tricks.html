@@ -1,0 +1,333 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Shravista</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<link rel="icon" href="../images/logo_icon_rev.png" sizes="32x32"/>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<!-- Header -->
+								<header id="header">
+									<a href="../blog.html" class="logo"><strong>Shravista's Blog</strong></a>
+									<ul class="icons">
+									    <li><a href="../home.html" class="icon solid fa-home"><span class="label">Home</span></a></li>
+										<li><a href="https://www.linkedin.com/in/shravista/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
+										<li><a href="https://github.com/Shravista" class="icon brands fa-github"><span class="label">Github</span></a></li>
+										<li><a href="mailto:shravistakashyap@gmail.com" class="icon solid fa-envelope"><span class="label">Gmail</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Banner -->
+							<section>
+								<center><h1> ROS : Some tips and tricks </h1> </center>
+								<b>Disclaimer</b>: The below topics are relatable to ROS1. It might work in ROS2 also, but I haven't tried ROS2 yet, so not sure about the same.
+							</section>
+							<hr class="major"/>
+							<h2> 1. Nested File systems </h2>	
+							<p> One frustrating thing in ROS, it becomes slow either while launching the gazebo or running a navigation stack or custom nodes. It becomes even more frustrating when we repeatedly test that particular node. It happened to me constantly when I became an intermediate ROS user. When I started my internship, this reduced my work efficiency, where I had to build custom planner plugins and other stuff for the existing navigation stack. So, I started blaming my system configuration even though it looks like this below.</p>
+							<ul> 
+                                <li>Dell Inspiron 7591</li>
+                                <li>RAM: 16 GB</li>
+                                <li>GeForce GTX 1050 3 GB Max-Q</li>
+                                <li>2TB hard drive where I run ubuntu os</li>
+                                <li>512 GB SSD for windows</li>
+                            </ul>
+                            <p>For one year, I thought the hard drive slowed down my system. So, I urged myself to bring another SSD for installation that cost me &#x20b9; 3500, in which I had to re-install ubuntu, ROS and all of the libraries I had previously installed. But surprisingly, the problem persists. However, it did improve the boot time and run some applications like chrome faster than before, but, no improvement on the auto-completion side as well as launching ros nodes. I even tried using the preload package in both cases, but there was no considerable improvement. Also, I have looked for which system process is slowing down my pc using the <code> systemd-analyze</code> like shown below.
+                            <pre><code>~$ systemd-analyze time
+~$ systemd-analyze blame </code></pre> 
+                            But, disabling unwanted systemd units had no effect at all. </p>
+                            <p>So finally, I looked for causes of delay in completing the command when pressed <tab>. I tried a few, like disabling the audio bell in terminal preferences, which has no effect in my case. Then I started debugging auto-complete by using the command 
+                            <pre><code>~$ set -x</code></pre> 
+                            and seeing where it took the time (<i>Reminder: use <code> set +x </code> to revert back</i>). I found out that roslaunch-autocomplete (located in <code class="shell">/opt/ros/$ROS_DISTRO/bin</code>) is the culprit (although it is not the sole reason), which uses a python script to search and display possible outputs below the command. So, when you press the <i>tab-tab</i> for auto-completion, it traverses through all of your directories starting from the beginning letter (if it is no letter, i.e., simply whitespace, it searches through all files within the package). If your ROS workspace looks something like the one below (aka nested folders), 
+                            <pre><code>/catkin_ws
+..../build
+..../devel
+..../src
+......../package1
+......../package2
+......../package_parent_1
+............/package_child_to_parent_1
+................/child1_1
+................/[some more]
+............/package_child_2_to_parent_1
+................/child_2_1
+................/[some more]
+......../package_parent_2
+............/package_child_to_parent_2
+................/child2_1_1
+................/[some more]
+............/package_child_to_parent_2
+................/child2_1_2
+................/[some more]
+......../[some more]
+........CMakeLists.txt</code></pre>
+                            I am sure this is the sole reason for slowing down launching the ros nodes, and auto-completion is the <b>nested filesystem</b>. The best method to tackle this issue is to keep your workspace with a few possible folders nested, or don't keep folders inside another folder and repeat. (The below file structure of folders helped me).
+                            <pre><code>/catkin_ws
+..../build
+..../devel
+..../src
+......../package1
+......../package2
+......../package_parent_1
+............/child1_1
+............/child1_2
+............/[some more]
+......../package_parent_2
+............/child2_1
+............/child2_2
+............/[some more]
+......../[some more]
+........CMakeLists.txt</code></pre>
+                             Unfortunately, we cannot improve or replace that python script for now, which must be done at the core level of ROS. But the easiest solution is to have packages that are not too nested, as shown above. This method helped me speed up the auto-completion issue and the launching ROS node and whatnot, compiling this extensive list of packages in my workspace. In summary, you don't have a nested filesystem in your ros workspace; instead, you can keep it as straightforward as possible.<br/><br/>
+                             <h3>Reference</h3>
+                             <p>1. <a href="https://github.com/ros/ros_comm/issues/535#issuecomment-66244788" target="_blank">ROS COMMON ISSUES </a></p>
+							<hr class="major"/>
+							<h2> 2. Gazebo and black shadows </h2>
+							<p>In the gazebo, a common issue is that the simulation always starts with a shadowed scene like the one shown in the figure 1. It is commonly observed in non-Nvidia GPU pc. An easy solution is to disable the shadows in the gazebo by setting shadows false under the Scene in world tab on the panel (see figure 2).</p>
+							
+							<div class="box alt">
+							    <div class="row gtr-100 gtr-uniform">
+								    <div class="col-9 col-12-small">
+									    <span class="image fit"><figure><img src="../images/blog/examp_before.png" alt="gazebo-before" /><figcaption>Figure 1. The scene illustrates the black shadows in the environment</figcaption></figure></span>
+								    </div>
+								    <div class="col-3 col-8-small">
+								        <span class="image fit"><figure><img src="../images/blog/examp_inter.png" alt="gazebo-before" /><figcaption>Figure 2. The image illustrates the settings where one can modify the property of shadows</figcaption></figure></span>
+								    </div>
+								</div>
+							</div>
+							<p>Another way to make this work is to set the shadows to 0 in the world file.</p>
+							<pre><code>&lt;scene>
+    &lt;ambient>0.4 0.4 0.4 1&lt;/ambient>
+    &lt;background>0.7 0.7 0.7 1&lt;/background>
+    &lt;shadows>0&lt;/shadows>
+&lt;/scene></code> </pre>
+                            <p>But this setting only works sometimes; we may have to toggle the shadows from false-true-false. If your pc has an Nvidia graphics card, there is a workaround mentioned in this <a href="https://github.com/gazebosim/gazebo-classic/issues/2623#issuecomment-1090147833" target="_blank">comment in GitHub</a>. So, according to this, we need to enable Nvidia and use these lines in the file .bashrc.</p>
+                            <pre><code>sudo prime-select on-demand
+# activate offload rendering for OpenGL applications
+export __NV_PRIME_RENDER_OFFLOAD=1
+export __GLX_VENDOR_LIBRARY_NAME=nvidia</code> </pre>
+							<hr class="major"/>
+							<h2> 3. Clock Skew Problem </h2>
+							<p>Clock synchronization is often a problem on a remote machine (robot) and systems with dual boots, which causes this clock-skew problem while building and compiling the packages making the build incomplete. To avoid this problem, use the command <code>touch * </code> in the folder that shows this error to change the file timestamps. </p>
+							<h3> Reference </h3>
+							<ol> <li><a href="" target="_blank">https://stackoverflow.com/questions/18235654/how-to-solve-error-clock-skew-detected</a></li>
+							     <li><a href="" target="_blank">https://stackoverflow.com/questions/3824500/compiling-c-on-remote-linux-machine-clock-skew-detected-warning</a></li></ol>
+							
+							<hr class="major"/>
+							<h2> 4. Auto launch files at startup </h2>
+							<p>Possible ways to launch or execute the program files are crontab, startup applications and Systemd. Here, I am not going to discuss which is best for ROS. It depends on various factors and personal experience with these methods, and importantly, I didn't work with crontab, so I won't be discussing the same. Instead, let's start with Startup Applications, the gnome-session manager, where one can explicitly mention which program to execute. You can find this application in the menu (if you have not seen this in your system, install it using <code> sudo apt-get install gnome-startup-applications</code>). After booting, it runs the commands that you are running the program on a terminal session.</p>
+							<div class="box alt">
+							    <div class="row">
+								    <div class="col-6 col-12-small">
+									    <span class="image fit"><figure><img src="../images/blog/startup.png" alt="startup icon" /><figcaption>Figure 3. The figure illustrates the startup applications</figcaption></figure></span>
+								    </div>
+								    <div class="col-6 col-12-small">
+								        <span class="image fit"><figure><img src="../images/blog/startup-1.png" alt="gazebo-before" /><figcaption>Figure 4. The figure illustrates the startup applications user interface</figcaption></figure></span>
+								    </div>
+								</div>
+							</div>
+							<p>So to use this application for your requirements, you need to use the 'add' button, enter the command and some comments for bookkeeping, and reboot. I found this method extremely useful for starting GUI applications.</p>
+							<div class="box alt">
+							    <div class="row">
+								    <div class="col-6 col-12-small">
+									    <span class="image fit"><figure><img src="../images/blog/startup-enter.png" alt="startup icon" /><figcaption>Figure 5. The figure illustrates using the startup applications for adding new program using "add button" </figcaption></figure></span>
+								    </div>
+								    <div class="col-6 col-12-small">
+								        <span class="image fit"><figure><img src="../images/blog/startup-final.png" alt="gazebo-before" /><figcaption>Figure 6. The figure illustrates the startup applications user interface after adding the program to this session</figcaption></figure></span>
+								    </div>
+								</div>
+							</div>
+							<p>The other best way I found helpful is Systemd. The discussion for auto launch in ROS discourse was beneficial <a href="https://discourse.ros.org/t/automatic-launch-on-os-startup/23462" target="_blank">Automatic .launch on OS startup </a> and <a href="https://discourse.ros.org/t/how-do-you-launch-your-systems/23383" target="_blank">How do you launch your systems?</a>. This video about <a href="https://vimeo.com/649646577" target="_blank">Boot to ROS in 7 seconds </a>  at ROSCON about minimizing kernel for ROS-specific robots is a good start but takes work to follow. For getting started, the package called <a href="https://github.com/LucidOne/robot_systemd" target="_blank">robot_systemd</a> has a recipe to use the roslaunch file that can run your programs right after at system boot. Here in this post I will explain how I have used systemd services. Firstly, set up your launch file (see the example below) that runs your program.</p>
+<pre><code>&lt;?xml version="1.0"?&gt;
+&lt;launch&gt;
+    &lt;!-- map --&gt;
+    &lt;arg name="map_file" default="$(find husky_nav)/maps/plant_17_09_edited.yaml"/&gt;
+    &lt;node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/&gt;
+    
+    &lt;!-- amcl --&gt;
+    &lt;include file="$(find husky_nav)/launch/amcl.launch"/&gt;
+    &lt;!-- amcl --&gt;
+    &lt;include file="$(find husky_nav)/launch/move_base.launch"/&gt;
+    
+    &lt;!--rviz--&gt;
+    &lt;node pkg="rviz" type="rviz" name="husky_rviz" args="-d $(find husky_nav)/config/move_base_robot.rviz"/&gt;
+&lt;/launch&gt;
+</code></pre>
+                            <p> Use a shell script to run this launch file in your known folder. </p>
+<pre><code>#!/bin/bash
+
+export ROS_HOME=/home/shravista/logs # useful to read the logs
+source /home/shravista/catkin_ws/devel/setup.sh # useful
+roslaunch husky_nav stack.launch
+</code></pre>
+                            <p>Then set up your .service file, which looks something like the one below. (all lines are self-explanatory). Remember that the .service file should be located at <code> /lib/systemd/system</code>; to do the same, you must edit the file with root permissions.</p>
+<pre><code class="">[Unit]
+Description=Name_of_the_service
+Documentation="Some reference-work to know about this file Here"
+After=network-online.target # Add if this service has depend another service which needs to start right after that dependency
+Wants=network-online.target
+AssertPathExists=/opt/ros
+
+[Service]
+
+Type=simple
+SyslogIdentifier=ros_%I
+TasksMax=infinity
+KillSignal=SIGINT
+Environment=ROS_PORT=11311
+Environment=ROS_DISTRO=noetic
+EnvironmentFile=-/etc/ros/environment
+EnvironmentFile=-%h/.ros/environment
+
+# Remember only you can prevent vendor lock
+ExecStartPre=/bin/bash -c ' \
+  if [ -x /bin/netcat ]; then \
+    for i in {1..10}; do \
+      sleep 0.2; \
+      ! netcat -z localhost $$ROS_PORT || break; \
+    done; \
+  else \
+    sleep 1; \
+  fi \
+'
+ExecStart=/home/shravista/Desktop/auto_launch/stack.bash #files need to be executable
+Restart=on-failure
+
+[Install]
+
+WantedBy=multi-user.target
+</code></pre>
+                            <p>Then, reload the system configuration using <code>daemon-reload</code>, followed by enabling and starting your .service file. Now you can check the status of the systemctl service and whether it is running without any issues. Any program, launch file or shell script errors can cause the system to fail. So, make sure that your script file runs correctly. If you don't want to use this service, you can also disable it and delete the file if required.</p>
+<pre><code># reload system configuration. do this whenever you change the .service file
+sudo systemctl daemon-reload
+
+# enable the .service
+sudo systemctl enable stack.service
+
+# start the .service
+sudo systemctl start stack.service
+
+# status of your .service
+sudo systemctl status stack.service
+
+# if code failed and error is only in the program and modified acordingly then the following command do help
+sudo systemctl restart stack.service
+</code></pre>
+                                <p>If everything goes correct then you should see the relavant output.</p>
+                                <b>Note: </b><li>You might require to install some packages at the root; otherwise, I observed that the code throws an error, causing the .service file to throw an error. Be aware of it.</li>    
+                                <hr class="major"/>
+                                <h2>5. Bash Aliases </h2>
+                                <p>We often use the same program to run part of the entire project (the reasons could be anything). So, we use bookkeeping to save the commands in a text file (of course, this is the best method, and even I tend to follow it). But, especially in ROS, we need to use regularly <code> catkin_make</code>. It becomes irritating when we constantly change the path and repeat it. So one easy-to-go method I have been using is bash aliases, where I turn running this catkin_make at the start of the catkin_ws directory to anywhere with this simple script.</p>
+<pre><code>#!/usr/bin/bash
+# functions : 
+#       1. clear the terminal output
+#       2. compile the ros packages
+#       3. setup the workspace afer compilation
+#       4. change to current working directory
+# Usage:
+# compile &lt;flags&gt;
+# flags:
+# -c = to compile the workspace
+# -s = to set up the workspace
+dir=$PWD
+args=$1
+if [ $# -ge 1 ]; then
+    if [ $args == '-c' ]; then
+        echo "Current Path: $dir"
+        cd ~/catkin_ws
+        catkin_make
+        source devel/setup.bash
+        cd $dir    
+    elif [ $args == '-s' ]; then
+        source ~/catkin_ws/devel/setup.bash
+    else
+        echo "Usage: compile &lt;flags&gt; -c for compile the workspace and -s for setup the workspace"
+    fi
+else
+    clear
+    echo "Current Path: $dir"
+    cd ~/catkin_ws
+    catkin_make
+    source devel/setup.bash
+    cd $dir
+fi
+</code></pre>
+                                <p>Then I put it in .bash_aliases to use the command after sourcing the .bashrc file. </p>
+<pre><code>alias compile="/home/shravista/catkin_ws/compile.sh"
+</code></pre>
+                                <p>Remember that these lines are present in the .bashrc file; otherwise, it won't work.</p>
+<pre><code>if [ -f ~/.bash_aliases ]; then
+    . ~/.bash_aliases
+fi
+</code></pre>
+                                <p> Hurray! You can just use compile being in any part of the directory.</p>
+                                <hr class="major"/>
+                                <b>Disclaimer</b> : If you feel there is room for improvement in this article and mistakes in delivering the post (grammatical, concept, or technical errors). Please report them to me. I will take the necessary actions at the earliest.
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="../home.html">home</a></li>
+										<li><a href="../blog.html">Blog</a></li>
+										<li><a href="../portfolio.html">Portfolio</a></li>
+										<li><a href="../about.html">About</a></li>
+									</ul>
+								</nav>
+
+								
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<!--<p> Description</p>-->
+									<ul class="contact">
+										<li class="icon solid fa-envelope"><a href="mailto:shravistakashyap@gmail.com">shravistakashyap@gmail.com</a></li>
+									</ul>
+									<div class="mini-posts">
+										<article>
+											<a href="#" class="image"><img src="../images/logo_icon.png" alt="Shravista" /></a>
+										</article>
+                                    </div>
+								</section>
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">Web design credits: <a href="https://html5up.net">HTML5 UP</a>.</p>
+								</footer>
+
+						</div>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+
+	</body>
+</html>
