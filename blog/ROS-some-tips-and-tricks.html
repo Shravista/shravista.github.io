@@ -119,14 +119,15 @@
     &lt;background>0.7 0.7 0.7 1&lt;/background>
     &lt;shadows>0&lt;/shadows>
 &lt;/scene></code> </pre>
+                            <span class="image fit"><figure><img src="../images/blog/examp_after_effects.png" alt="gazebo-before" /><figcaption>Figure 3. The scene illustrates the scene without shadows</figcaption></figure></span>
                             <p>But this setting only works sometimes; we may have to toggle the shadows from false-true-false. If your pc has an Nvidia graphics card, there is a workaround mentioned in this <a href="https://github.com/gazebosim/gazebo-classic/issues/2623#issuecomment-1090147833" target="_blank">comment in GitHub</a>. So, according to this, we need to enable Nvidia and use these lines in the file .bashrc.</p>
-                            <pre><code>sudo prime-select on-demand
-# activate offload rendering for OpenGL applications
-export __NV_PRIME_RENDER_OFFLOAD=1
-export __GLX_VENDOR_LIBRARY_NAME=nvidia</code> </pre>
+                            <pre><code class="language-shell hljs"><span class="hljs-meta prompt">$</span> sudo prime-select on-demand</code></pre>
+<pre><code class="language-shell hljs"><span class="hljs-comment"># activate offload rendering for OpenGL applications</span>
+<span class="hljs-built_in">export</span> __NV_PRIME_RENDER_OFFLOAD=1
+<span class="hljs-built_in">export</span> __GLX_VENDOR_LIBRARY_NAME=nvidia</code> </pre>
 							<hr class="major"/>
 							<h2> 3. Clock Skew Problem </h2>
-							<p>Clock synchronization is often a problem on a remote machine (robot) and systems with dual boots, which causes this clock-skew problem while building and compiling the packages making the build incomplete. To avoid this problem, use the command <code>touch * </code> in the folder that shows this error to change the file timestamps. </p>
+							<p>Clock synchronization is often a problem on a remote machine (robot) and systems with dual boots, which causes this clock-skew problem while building and compiling the packages making the build incomplete. To avoid this problem, use the command <code class="language-shell hljs"><span class="hljs-built_in">touch</span> * </code> in the folder that shows this error to change the file timestamps. </p>
 							<h3> Reference </h3>
 							<ol> <li><a href="" target="_blank">https://stackoverflow.com/questions/18235654/how-to-solve-error-clock-skew-detected</a></li>
 							     <li><a href="" target="_blank">https://stackoverflow.com/questions/3824500/compiling-c-on-remote-linux-machine-clock-skew-detected-warning</a></li></ol>
@@ -156,49 +157,48 @@ export __GLX_VENDOR_LIBRARY_NAME=nvidia</code> </pre>
 								</div>
 							</div>
 							<p>The other best way I found helpful is Systemd. The discussion for auto launch in ROS discourse was beneficial <a href="https://discourse.ros.org/t/automatic-launch-on-os-startup/23462" target="_blank">Automatic .launch on OS startup </a> and <a href="https://discourse.ros.org/t/how-do-you-launch-your-systems/23383" target="_blank">How do you launch your systems?</a>. This video about <a href="https://vimeo.com/649646577" target="_blank">Boot to ROS in 7 seconds </a>  at ROSCON about minimizing kernel for ROS-specific robots is a good start but takes work to follow. For getting started, the package called <a href="https://github.com/LucidOne/robot_systemd" target="_blank">robot_systemd</a> has a recipe to use the roslaunch file that can run your programs right after at system boot. Here in this post I will explain how I have used systemd services. Firstly, set up your launch file (see the example below) that runs your program.</p>
-<pre><code>&lt;?xml version="1.0"?&gt;
-&lt;launch&gt;
-    &lt;!-- map --&gt;
-    &lt;arg name="map_file" default="$(find husky_nav)/maps/plant_17_09_edited.yaml"/&gt;
-    &lt;node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/&gt;
+<pre><code class="language-xml hljs">&lt;<span class="hljs-keyword">?xml</span> <span class="hljs-variable">version=</span><span class="hljs-string">"1.0"</span><span class="hljs-keyword">?</span>&gt;
+<span class="hljs-tag">&lt;<span class="hljs-name">launch</span>&gt;</span>
+    <span class="hljs-comment">&lt;!-- map --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"map_file"</span> <span class="hljs-attr">default</span>"="<span class="hljs-string">"$(find husky_nav)/maps/plant_17_09_edited.yaml"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">node</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"map_server"</span> <span class="attr">pkg</span>=<span class="hljs-string">"map_server"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"map_server"</span> <span class="hljs-attr">args</span>=<span class="hljs-string">"$(arg map_file)"</span>/&gt;</span>
+    <span class="hljs-comment">&lt;!-- amcl --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">include</span> <span class="hljs-attr">file</span>=<span class="hljs-string">"$(find husky_nav)/launch/amcl.launch"</span>/&gt;</span>
+    <span class="hljs-comment">&lt;!-- move base --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">include</span> <span class="hljs-attr">file</span>=<span class="hljs-string">"$(find husky_nav)/launch/move_base.launch"</span>/&gt;</span>
     
-    &lt;!-- amcl --&gt;
-    &lt;include file="$(find husky_nav)/launch/amcl.launch"/&gt;
-    &lt;!-- amcl --&gt;
-    &lt;include file="$(find husky_nav)/launch/move_base.launch"/&gt;
-    
-    &lt;!--rviz--&gt;
-    &lt;node pkg="rviz" type="rviz" name="husky_rviz" args="-d $(find husky_nav)/config/move_base_robot.rviz"/&gt;
-&lt;/launch&gt;
+    <span class="hljs-comment">&lt;!-- rviz --&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">node</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"husky_rviz"</span> <span class="attr">pkg</span>=<span class="hljs-string">"rviz"</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"rviz"</span> <span class="hljs-attr">args</span>=<span class="hljs-string">"-d $(find husky_nav)/config/move_base_robot.rviz"</span>/&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">launch</span>&gt;</span>
 </code></pre>
                             <p> Use a shell script to run this launch file in your known folder. </p>
-<pre><code>#!/bin/bash
+<pre><code class="language-bash hljs"><span class="hljs-meta">#!/bin/bash</span>
 
-export ROS_HOME=/home/shravista/logs # useful to read the logs
-source /home/shravista/catkin_ws/devel/setup.sh # useful
+<span class="hljs-built_in">export</span> <span class="hljs-variable">ROS_HOME</span>=<span class="hljs-string">/home/shravista/logs</span>
+<span class="hljs-built_in">source</span> <span class="hljs-string">/home/shravista/catkin_ws/devel/setup.sh</span>
 roslaunch husky_nav stack.launch
 </code></pre>
                             <p>Then set up your .service file, which looks something like the one below. (all lines are self-explanatory). Remember that the .service file should be located at <code> /lib/systemd/system</code>; to do the same, you must edit the file with root permissions.</p>
-<pre><code class="">[Unit]
-Description=Name_of_the_service
-Documentation="Some reference-work to know about this file Here"
-After=network-online.target # Add if this service has depend another service which needs to start right after that dependency
-Wants=network-online.target
-AssertPathExists=/opt/ros
+<pre><code class="language-ini hljs"><span class="hljs-section">[Unit]</span>
+<span class="hljs-literal">Description</span>=<span class="hljs-string">Name_of_the_service</span>
+<span class="hljs-literal">Documentation</span>=<span class="hljs-string">"Some reference-work to know about this file Here"</span>
+<span class="hljs-literal">After</span>=<span class="hljs-string">network-online.target</span> <span class="hljs-comment"># Add if this service has depend another service which needs to start right after that dependency</span>
+<span class="hljs-literal">Wants</span>=<span class="hljs-string">network-online.target</span>
+<span class="hljs-literal">AssertPathExists</span>=<span class="hljs-string">/opt/ros</span>
 
-[Service]
+<span class="hljs-section">[Service]</span>
 
-Type=simple
-SyslogIdentifier=ros_%I
-TasksMax=infinity
-KillSignal=SIGINT
-Environment=ROS_PORT=11311
-Environment=ROS_DISTRO=noetic
-EnvironmentFile=-/etc/ros/environment
-EnvironmentFile=-%h/.ros/environment
+<span class="hljs-literal">Type</span>=<span class="hljs-string">simple</span>
+<span class="hljs-literal">SyslogIdentifier</span>=<span class="hljs-string">ros_%I</span>
+<span class="hljs-literal">TasksMax</span>=<span class="hljs-string">infinity</span>
+<span class="hljs-literal">KillSignal</span>=<span class="hljs-string">SIGINT</span>
+<span class="hljs-literal">Environment</span>=<span class="hljs-string">ROS_PORT=11311</span>
+<span class="hljs-literal">Environment</span>=<span class="hljs-string">ROS_DISTRO=noetic</span>
+<span class="hljs-literal">EnvironmentFile</span>=<span class="hljs-string">-/etc/ros/environment</span>
+<span class="hljs-literal">EnvironmentFile</span>=<span class="hljs-string">-%h/.ros/environment</span>
 
-# Remember only you can prevent vendor lock
-ExecStartPre=/bin/bash -c ' \
+<span class="hljs-comment"># Remember only you can prevent vendor lock</span>
+<span class="hljs-literal">ExecStartPre</span>=<span class="hljs-string">/bin/bash -c ' \
   if [ -x /bin/netcat ]; then \
     for i in {1..10}; do \
       sleep 0.2; \
@@ -207,13 +207,14 @@ ExecStartPre=/bin/bash -c ' \
   else \
     sleep 1; \
   fi \
-'
-ExecStart=/home/shravista/Desktop/auto_launch/stack.bash #files need to be executable
-Restart=on-failure
+'</span>
+<span class="hljs-literal">ExecStart</span>=<span class="hljs-string">/home/shravista/Desktop/auto_launch/stack.bash #files need to be executable</span>
+<span class="hljs-literal">Restart</span>=<span class="hljs-string">on-failure</span>
 
-[Install]
+<span class="hljs-section">[Install]</span>
 
-WantedBy=multi-user.target
+<span class="hljs-literal">WantedBy</span>=<span class="hljs-string">multi-user.target</span>
+</span>
 </code></pre>
                             <p>Then, reload the system configuration using <code>daemon-reload</code>, followed by enabling and starting your .service file. Now you can check the status of the systemctl service and whether it is running without any issues. Any program, launch file or shell script errors can cause the system to fail. So, make sure that your script file runs correctly. If you don't want to use this service, you can also disable it and delete the file if required.</p>
 <pre><code class="language-shell hljs"># reload system configuration. do this whenever you change the .service file
