@@ -11,6 +11,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="../assets/css/main.css" />
 		<link rel="icon" href="../images/logo_icon_rev.png" sizes="32x32"/>
+		<link rel="stylesheet" href="../assets/highlight/styles/default.min.css">
+        <script src="../assets/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
 	</head>
 	<body class="is-preload">
 
@@ -47,8 +50,8 @@
                                 <li>512 GB SSD for windows</li>
                             </ul>
                             <p>For one year, I thought the hard drive slowed down my system. So, I urged myself to bring another SSD for installation that cost me &#x20b9; 3500, in which I had to re-install ubuntu, ROS and all of the libraries I had previously installed. But surprisingly, the problem persists. However, it did improve the boot time and run some applications like chrome faster than before, but, no improvement on the auto-completion side as well as launching ros nodes. I even tried using the preload package in both cases, but there was no considerable improvement. Also, I have looked for which system process is slowing down my pc using the <code> systemd-analyze</code> like shown below.
-                            <pre><code>~$ systemd-analyze time
-~$ systemd-analyze blame </code></pre> 
+                            <pre><code class="language-shell hljs">$ systemd-analyze time
+$ systemd-analyze blame </code></pre> 
                             But, disabling unwanted systemd units had no effect at all. </p>
                             <p>So finally, I looked for causes of delay in completing the command when pressed <tab>. I tried a few, like disabling the audio bell in terminal preferences, which has no effect in my case. Then I started debugging auto-complete by using the command 
                             <pre><code>~$ set -x</code></pre> 
@@ -212,7 +215,7 @@ Restart=on-failure
 WantedBy=multi-user.target
 </code></pre>
                             <p>Then, reload the system configuration using <code>daemon-reload</code>, followed by enabling and starting your .service file. Now you can check the status of the systemctl service and whether it is running without any issues. Any program, launch file or shell script errors can cause the system to fail. So, make sure that your script file runs correctly. If you don't want to use this service, you can also disable it and delete the file if required.</p>
-<pre><code># reload system configuration. do this whenever you change the .service file
+<pre><code class="language-shell hljs"># reload system configuration. do this whenever you change the .service file
 sudo systemctl daemon-reload
 
 # enable the .service
@@ -232,47 +235,50 @@ sudo systemctl restart stack.service
                                 <hr class="major"/>
                                 <h2>5. Bash Aliases </h2>
                                 <p>We often use the same program to run part of the entire project (the reasons could be anything). So, we use bookkeeping to save the commands in a text file (of course, this is the best method, and even I tend to follow it). But, especially in ROS, we need to use regularly <code> catkin_make</code>. It becomes irritating when we constantly change the path and repeat it. So one easy-to-go method I have been using is bash aliases, where I turn running this catkin_make at the start of the catkin_ws directory to anywhere with this simple script.</p>
-<pre><code>#!/usr/bin/bash
-# functions : 
-#       1. clear the terminal output
-#       2. compile the ros packages
-#       3. setup the workspace afer compilation
-#       4. change to current working directory
-# Usage:
-# compile &lt;flags&gt;
-# flags:
-# -c = to compile the workspace
-# -s = to set up the workspace
-dir=$PWD
-args=$1
-if [ $# -ge 1 ]; then
-    if [ $args == '-c' ]; then
-        echo "Current Path: $dir"
-        cd ~/catkin_ws
+<pre><code class="language-bash hljs">
+<span class="hljs-meta">#!/usr/bin/bash </span>
+<span class="hljs-comment"># functions : </span>
+<span class="hljs-comment">#       1. clear the terminal output</span>
+<span class="hljs-comment">#       2. compile the ros packages</span>
+<span class="hljs-comment">#       3. setup the workspace afer compilation</span>
+<span class="hljs-comment">#       4. change to current working directory</span>
+<span class="hljs-comment"># Usage:</span>
+<span class="hljs-comment"># compile &lt;flags&gt;</span>
+<span class="hljs-comment"># flags:</span>
+<span class="hljs-comment"># -c = to compile the workspace</span>
+<span class="hljs-comment"># -s = to set up the workspace</span>
+<span class="hljs-comment"># without flags it just compile the workspace</span>
+
+dir=<span class="hljs-variable">$PWD</span>
+args=<span class="hljs-variable">$1</span>
+<span class="hljs-keyword">if</span> [ <span class="hljs-variable">$#</span> -ge 1 ]; <span class="hljs-keyword">then </span>
+    <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$args</span> == '-c' ]; <span class="hljs-keyword">then</span>
+        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Current Path: $dir"</span>
+        <span class="hljs-built_in">cd</span> ~/catkin_ws
         catkin_make
-        source devel/setup.bash
-        cd $dir    
-    elif [ $args == '-s' ]; then
-        source ~/catkin_ws/devel/setup.bash
-    else
-        echo "Usage: compile &lt;flags&gt; -c for compile the workspace and -s for setup the workspace"
-    fi
-else
-    clear
-    echo "Current Path: $dir"
-    cd ~/catkin_ws
+        <span class="hljs-built_in">source</span> devel/setup.bash
+        <span class="hljs-built_in">cd</span> <span class="hljs-variable">$dir</span>
+    <span class="hljs-keyword">elif</span>[ <span class="hljs-variable">$args</span> == <span class="hljs-string">'-s'</span> ]; <span class="hljs-keyword">then</span>
+        <span class="hljs-built_in">source</span> ~/catkin_ws/devel/setup.bash
+   <span class="hljs-keyword">else</span>
+        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Usage: compile &lt;flags&gt; -c for compile the workspace and -s for setup the workspace"</span>
+    <span class="hljs-keyword">fi</span>
+<span class="hljs-keyword">else</span>
+    <span class="hljs-built_in">clear</span>
+    <span class="hljs-built_in">echo</span> "Current Path: $dir"
+    <span class="hljs-built_in">cd</span> ~/catkin_ws
     catkin_make
-    source devel/setup.bash
-    cd $dir
-fi
+    <span class="hljs-built_in">source</span> devel/setup.bash
+    <span class="hljs-built_in">cd</span> $dir
+<span class="hljs-keyword">fi</span>
 </code></pre>
                                 <p>Then I put it in .bash_aliases to use the command after sourcing the .bashrc file. </p>
 <pre><code>alias compile="/home/shravista/catkin_ws/compile.sh"
 </code></pre>
                                 <p>Remember that these lines are present in the .bashrc file; otherwise, it won't work.</p>
-<pre><code>if [ -f ~/.bash_aliases ]; then
+<pre><code class="language-bash hljs"><span class="hljs-keyword">if</span> [ -f ~/.bash_aliases ]; <span class="hljs-keyword">then</span>
     . ~/.bash_aliases
-fi
+<span class="hljs-keyword">fi</span>
 </code></pre>
                                 <p> Hurray! You can just use compile being in any part of the directory.</p>
                                 <hr class="major"/>
