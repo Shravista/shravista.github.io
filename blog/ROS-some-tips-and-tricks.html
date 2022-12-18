@@ -37,6 +37,7 @@
 							<!-- Banner -->
 							<section>
 								<center><h1> ROS : Some tips and tricks </h1> </center>
+								<p>December, 2022</p>
 								<b>Disclaimer</b>: The below topics are relatable to ROS1. It might work in ROS2 also, but I haven't tried ROS2 yet, so not sure about the same.
 							</section>
 							<hr class="major"/>
@@ -50,11 +51,11 @@
                                 <li>512 GB SSD for windows</li>
                             </ul>
                             <p>For one year, I thought the hard drive slowed down my system. So, I urged myself to bring another SSD for installation that cost me &#x20b9; 3500, in which I had to re-install ubuntu, ROS and all of the libraries I had previously installed. But surprisingly, the problem persists. However, it did improve the boot time and run some applications like chrome faster than before, but, no improvement on the auto-completion side as well as launching ros nodes. I even tried using the preload package in both cases, but there was no considerable improvement. Also, I have looked for which system process is slowing down my pc using the <code> systemd-analyze</code> like shown below.
-                            <pre><code class="language-shell hljs">$ systemd-analyze time
-$ systemd-analyze blame </code></pre> 
+                            <pre><code class="language-shell hljs"><span class="hljs-meta prompt">$</span> systemd-analyze time
+<span class="hljs-meta prompt">$</span> systemd-analyze blame </code></pre> 
                             But, disabling unwanted systemd units had no effect at all. </p>
                             <p>So finally, I looked for causes of delay in completing the command when pressed <tab>. I tried a few, like disabling the audio bell in terminal preferences, which has no effect in my case. Then I started debugging auto-complete by using the command 
-                            <pre><code>~$ set -x</code></pre> 
+                            <pre><code class="language-shell hljs"><span class="hljs-meta prompt">$</span> set -x</code></pre> 
                             and seeing where it took the time (<i>Reminder: use <code> set +x </code> to revert back</i>). I found out that roslaunch-autocomplete (located in <code class="shell">/opt/ros/$ROS_DISTRO/bin</code>) is the culprit (although it is not the sole reason), which uses a python script to search and display possible outputs below the command. So, when you press the <i>tab-tab</i> for auto-completion, it traverses through all of your directories starting from the beginning letter (if it is no letter, i.e., simply whitespace, it searches through all files within the package). If your ROS workspace looks something like the one below (aka nested folders), 
                             <pre><code>/catkin_ws
 ..../build
