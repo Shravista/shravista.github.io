@@ -236,7 +236,7 @@ sudo systemctl restart stack.service
                                 <b>Note: </b><li>You might require to install some packages at the root; otherwise, I observed that the code throws an error, causing the .service file to throw an error. Be aware of it.</li>    
                                 <hr class="major"/>
                                 <h2>5. Bash Aliases </h2>
-                                <p>We often use the same program to run part of the entire project (the reasons could be anything). So, we use bookkeeping to save the commands in a text file (of course, this is the best method, and even I tend to follow it). But, especially in ROS, we need to use regularly <code> catkin_make</code>. It becomes irritating when we constantly change the path and repeat it. So one easy-to-go method I have been using is bash aliases, where I turn running this catkin_make at the start of the catkin_ws directory to anywhere with this simple script.</p>
+                                <p>We often use the same program to run part of the entire project (the reasons could be anything). So, we use bookkeeping to save the commands in a text file (of course, this is the best method, and even I tend to follow it). The other way to make our commands easy to use are bash aliases. For example, in ROS, we need to use regularly <code> catkin_make</code>. It becomes irritating when we constantly change the path and repeat it. So one easy-to-go method I have been using is bash aliases, where I turn running this catkin_make at the start of the catkin_ws directory to anywhere with this simple script.</p>
 <pre><code class="language-bash hljs">
 <span class="hljs-meta">#!/usr/bin/bash </span>
 <span class="hljs-comment"># functions : </span>
@@ -322,7 +322,6 @@ args=<span class="hljs-variable">$1</span>
 								</section>
 							<!-- Footer -->
 								<footer id="footer">
-								    <p> Best viewed in PC </p>
 									<p class="copyright">Web design credits: <a href="https://html5up.net">HTML5 UP</a>.</p>
 								</footer>
 
