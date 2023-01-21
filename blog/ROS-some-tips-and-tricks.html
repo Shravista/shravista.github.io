@@ -125,6 +125,7 @@
 <pre><code class="language-shell hljs"><span class="hljs-comment"># activate offload rendering for OpenGL applications</span>
 <span class="hljs-built_in">export</span> __NV_PRIME_RENDER_OFFLOAD=1
 <span class="hljs-built_in">export</span> __GLX_VENDOR_LIBRARY_NAME=nvidia</code> </pre>
+                            <b>Warning: </b> For some reasons the above two lines are not working to make gazebo run in my machine. I will update this blog, if I find out what causing this problem.
 							<hr class="major"/>
 							<h2> 3. Clock Skew Problem </h2>
 							<p>Clock synchronization is often a problem on a remote machine (robot) and systems with dual boots, which causes this clock-skew problem while building and compiling the packages making this build incomplete. To avoid this problem, use the command <code class="language-shell hljs"><span class="hljs-built_in">touch</span> * </code> in the folder that shows this error to change the file timestamps. </p>
