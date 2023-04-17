@@ -239,47 +239,11 @@ sudo systemctl restart stack.service
                                 <hr class="major"/>
                                 <h2>5. Bash Aliases </h2>
                                 <p>We often use the same program to run part of the entire project (the reasons could be anything). So, we use bookkeeping to save the commands in a text file (of course, this is the best method, and even I tend to follow it). The other way to make our commands easy to use are bash aliases. For example, in ROS, we need to use regularly <code> catkin_make</code>. It becomes irritating when we constantly change the path and repeat it. So one easy-to-go method I have been using is bash aliases, where I turn running this catkin_make at the start of the catkin_ws directory to anywhere with this simple script.</p>
-<pre><code class="language-bash hljs">
-<span class="hljs-meta">#!/usr/bin/bash </span>
-<span class="hljs-comment"># functions : </span>
-<span class="hljs-comment">#       1. clear the terminal output</span>
-<span class="hljs-comment">#       2. compile the ros packages</span>
-<span class="hljs-comment">#       3. setup the workspace afer compilation</span>
-<span class="hljs-comment">#       4. change to current working directory</span>
-<span class="hljs-comment"># Usage:</span>
-<span class="hljs-comment"># compile &lt;flags&gt;</span>
-<span class="hljs-comment"># flags:</span>
-<span class="hljs-comment"># -c = to compile the workspace</span>
-<span class="hljs-comment"># -s = to set up the workspace</span>
-<span class="hljs-comment"># without flags it just compile the workspace</span>
-
-dir=<span class="hljs-variable">$PWD</span>
-args=<span class="hljs-variable">$1</span>
-<span class="hljs-keyword">if</span> [ <span class="hljs-variable">$#</span> -ge 1 ]; <span class="hljs-keyword">then </span>
-    <span class="hljs-keyword">if</span> [ <span class="hljs-variable">$args</span> == '-c' ]; <span class="hljs-keyword">then</span>
-        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Current Path: $dir"</span>
-        <span class="hljs-built_in">cd</span> ~/catkin_ws
-        catkin_make
-        <span class="hljs-built_in">source</span> devel/setup.bash
-        <span class="hljs-built_in">cd</span> <span class="hljs-variable">$dir</span>
-    <span class="hljs-keyword">elif</span>[ <span class="hljs-variable">$args</span> == <span class="hljs-string">'-s'</span> ]; <span class="hljs-keyword">then</span>
-        <span class="hljs-built_in">source</span> ~/catkin_ws/devel/setup.bash
-   <span class="hljs-keyword">else</span>
-        <span class="hljs-built_in">echo</span> <span class="hljs-string">"Usage: compile &lt;flags&gt; -c for compile the workspace and -s for setup the workspace"</span>
-    <span class="hljs-keyword">fi</span>
-<span class="hljs-keyword">else</span>
-    <span class="hljs-built_in">clear</span>
-    <span class="hljs-built_in">echo</span> "Current Path: $dir"
-    <span class="hljs-built_in">cd</span> ~/catkin_ws
-    catkin_make
-    <span class="hljs-built_in">source</span> devel/setup.bash
-    <span class="hljs-built_in">cd</span> $dir
-<span class="hljs-keyword">fi</span>
-</code></pre>
+                                <script src="https://gist.github.com/Shravista/469edceb22e4db80d6123fef4f993155.js"></script>
                                 <p>Then I put it in .bash_aliases to use the command after sourcing the .bashrc file. </p>
 <pre><code>alias compile="/home/shravista/catkin_ws/compile.sh"
 </code></pre>
-                                <p>Remember that these lines are present in the .bashrc file; otherwise, it won't work.</p>
+                                <p>Remember that these lines should be present in the .bashrc file; otherwise, this won't work.</p>
 <pre><code class="language-bash hljs"><span class="hljs-keyword">if</span> [ -f ~/.bash_aliases ]; <span class="hljs-keyword">then</span>
     . ~/.bash_aliases
 <span class="hljs-keyword">fi</span>
