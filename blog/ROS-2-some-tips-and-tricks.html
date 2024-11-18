@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Shravista</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<link rel="icon" href="../images/logo_icon_rev.png" sizes="32x32"/>
+		<link rel="stylesheet" href="../assets/highlight/styles/default.min.css">
+        <script src="../assets/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<!-- Header -->
+								<header id="header">
+									<a href="../blog.html" class="logo"><strong>Shravista's Blog</strong></a>
+									<ul class="icons">
+									    <li><a href="../index.html" class="icon solid fa-home"><span class="label">Home</span></a></li>
+										<li><a href="https://www.linkedin.com/in/shravista/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
+										<li><a href="https://github.com/Shravista" class="icon brands fa-github"><span class="label">Github</span></a></li>
+										<li><a href="mailto:shravistakashyap@gmail.com" class="icon solid fa-envelope"><span class="label">Gmail</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Banner -->
+							<section>
+								<center><h1> ROS 2: Some tips and tricks </h1> </center>
+								<p>18<sup>th</sup> November, 2024 </br>
+								<b>Disclaimer</b>: The below topics are relatable to ROS 2 Disto Jazzy Jalisco. It might work in other distributions also..
+								More Updates to this post yet to come.
+							</section>
+							<hr class="major"/>
+							
+                                <h2>1. Bash Aliases </h2>
+                                <p>We often use the same program to run part of the entire project (the reasons could be anything). 
+									So, we use bookkeeping to save the commands in a text file (of course, this is the best method, 
+									and I tend to follow it even). The other way to make our commands easy to use is to bash aliases.
+									For example, in ROS 2, we need to use regularly <code> colcon build &ltargs&gt</code>. 
+									It becomes irritating when we constantly change the path and repeat it. So, one easy-to-go method
+									I have been using bash aliases, where I turn running this <code> colcon build &ltargs&gt</code> 
+									at the start of the WORKSPACE directory to anywhere with this simple script.</p>
+                                <script src="https://gist.github.com/Shravista/e452b471df65875018e348eec5cf7915.js"></script>
+                                <p>Following this I put it in .bash_aliases to use the command after sourcing the .bashrc file. </p>
+<pre><code>alias compile="source ~/&ltWORKSPACE&gt/compile2.sh"
+</code></pre>
+                                <p>Remember that these lines should be present in the .bashrc file; otherwise, this won't work.</p>
+<pre><code class="language-bash hljs"><span class="hljs-keyword">if</span> [ -f ~/.bash_aliases ]; <span class="hljs-keyword">then</span>
+    . ~/.bash_aliases
+<span class="hljs-keyword">fi</span>
+</code></pre>
+                                <p> Hurray! You can just use compile being in any part of the directory.</p>
+                                <hr class="major"/>
+                                <b>Disclaimer</b> : If you feel there is room for improvement in this article and mistakes in delivering the post (grammatical, concept, or technical errors). Please report them to me. I will take the necessary actions at the earliest.
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="../index.html">home</a></li>
+										<li><a href="../blog.html">Blog</a></li>
+										<li><a href="../portfolio.html">Portfolio</a></li>
+										<li><a href="../about.html">About</a></li>
+									</ul>
+								</nav>
+
+								
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<!--<p> Description</p>-->
+									<ul class="contact">
+										<li class="icon solid fa-envelope"><a href="mailto:shravistakashyap@gmail.com">shravistakashyap@gmail.com</a></li>
+									</ul>
+									<div class="mini-posts">
+										<article>
+											<a href="#" class="image"><img src="../images/logo_icon.png" alt="Shravista" /></a>
+										</article>
+                                    </div>
+								</section>
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">Web design credits: <a href="https://html5up.net">HTML5 UP</a>.</p>
+								</footer>
+
+						</div>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+
+	</body>
+</html>
