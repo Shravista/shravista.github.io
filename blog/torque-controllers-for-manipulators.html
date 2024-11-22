@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Shravista</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/main.css" />
+		<link rel="icon" href="../images/logo_icon_rev.png" sizes="32x32"/>
+		<link rel="stylesheet" href="../assets/highlight/styles/default.min.css">
+        <script src="../assets/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+							<!-- Header -->
+								<header id="header">
+									<a href="../blog.html" class="logo"><strong>Shravista's Blog</strong></a>
+									<ul class="icons">
+									    <li><a href="../index.html" class="icon solid fa-home"><span class="label">Home</span></a></li>
+										<li><a href="https://www.linkedin.com/in/shravista/" class="icon brands fa-linkedin"><span class="label">Linkedin</span></a></li>
+										<li><a href="https://github.com/Shravista" class="icon brands fa-github"><span class="label">Github</span></a></li>
+										<li><a href="mailto:shravistakashyap@gmail.com" class="icon solid fa-envelope"><span class="label">Gmail</span></a></li>
+									</ul>
+								</header>
+
+							<!-- Banner -->
+							<section>
+								<center><h1> Torque Controller for Robot Manipulators </h1> </center>
+								<p>18<sup>th</sup> November, 2024 </br></p>
+							</section>
+							<hr class="major"/>
+							
+                                <h2>1. Introduction </h2>
+                                <p>Many robot applications tackle external disturbances whose presence makes robots challenging 
+									to control with just position or velocity commands or simply kinematic control [1].
+									For example, drones navigate through wind gusts, and robot manipulators handle varying payloads,
+									or mobile robots navigate in rough terrains [#1]. In all such scenarios, these agents are subjected 
+									to non-parametric exogenous disturbances (since the disturbances cannot be modelled as a function of the 
+									system's state) and parametric disturbances (such as damping friction). Moreover, kinematic control strategies 
+									fail to reject these disturbances, failing the robot to achieve prescribed tasks (like trajectory tracking or point-to-point
+									motion). To tackle this problem,  researchers leverage the dynamics of the given system (robotic arm drone or mobile robot) 
+									so that controlled inputs to the system can avoid the issues mentioned earlier. In other words, if we supply enough control 
+									input based on the system's dynamics to handle exogenous disturbances, the prescribed task can be availed without failures.
+									In addition, most systems, like robot manipulators, are comprised of actuators that take dynamical inputs, i.e., 
+									torque, that can handle the problems mentioned above.</p>
+								<p>This discussion motivates us to implement the torque-based controller on a robot system. However, a wise engineer recommends 
+									testing your simulation first. If your tests are positive, go for hardware implementation. In addition, many challenges occur
+									during implementation when sending the control inputs directly to the robot. Some of them are mentioned below.</p>
+								<ol>
+									<li>Deterministic implementation</li>
+									<li>Meeting the real-time expectation</li>
+									<li>What should happen to the robot when no control inputs are given? Do we expect it to stay at the last position or something 
+										else amid operation? </li>
+								</ol>
+								<p>In another post, I will address points (1) and (2) in detail. The main focus of this article is regarding point (3). In practice, 
+									if you do not send the torque commands to the robot, it essentially implies that zero control input is given at the instant. This
+									 situation can be catastrophic, leading to the destruction of equipment or, worse, amid the operation. I consider the robotic 
+									 manipulators for demonstrating these effects in the rest of the discussion. Also, illustrating these effects on real robots 
+									 is dangerous and not economic in nature. Therefore, I shall demonstrate it through the simulations in the gazebo. Moreover, 
+									 this post also concerns the existing ros2_controllers and its limitations in direct implementation in simulation.</p>
+							<hr class="major"/>
+							<h2>2. Problems</h2>
+								<p>	To replicate the problems or solution from here onwards, I shall narrate the sequnce of steps to complete this quest. In addition 
+									I am considering KUKA LBR IIWA 14 R820 industrial robot manipulator for simulations. 
+									 Firstly, I recommend installing the following repo on <a href="https://github.com/Shravista/torque_controllers.git">torque controllers</a>. 
+									<ul><li>Requirements: Ubuntu 24.04, ROS 2: Jazzy Jalisco, 
+										<a href="https://control.ros.org/jazzy/doc/getting_started/getting_started.html#installation">ROS 2 controllers</a>, 
+										<a href="https://gazebosim.org/docs/harmonic/install_ubuntu/">Gazebo Harmonic</a>,
+										<code>gz-ros2-control</code></li>
+										<li> Clone the repository into the workspace</li>
+									</ul>
+									 <pre><code class="shell">git clone https://github.com/Shravista/torque_controllers.git </code></pre>
+									
+									 <ul><li>Compile the package with <code class="shell">colcon build --symlink-install</code>. Then, launch the bringup file</li></ul>
+									<pre><code>ros2 launch example_robots iiwa14_bringup_launch.py 'controller_name:=iiwa14_effort_controller'</code></pre></p>
+									Then, observe that the robot falls down immediately after the bring-up file is launched.	
+									<video width="640px" height="360" muted autoplay loop>
+										<source src="../videos/case1_falling.mp4" type="video/mp4"/> Your browser doesnot support video tag</video>
+									<!-- <span class="image fit"><img src=/"../images/blog/case1_falling.gif" alt="Case 1 Falling" /></span> -->
+
+									 <p>Let us try to use the "Mouse Drag Tool" (see the Animation below for instructions on how to enable it) to try lifting the robot by
+									  using Ctrl + right-click on the mouse and then start lifting the robot. You will observe here that the robot falls down again, 
+									  right? Well, this action is because no control input is provided, and gravitational forces are doing their duty. 
+									<video width="640px" height="360" controls>
+										
+									  <source src="../videos/case1_mouseDrag.mp4" type="video/mp4"/> Your browser doesnot support video tag</video>
+									</p>
+								<p>Suppose we have an external agent that can supply appropriate torque commands to the robot to overcome the gravity forces and 
+									reach the target position. This is precisely what we can do by running the following program ( I will shed more light on what 
+									this program does in the background a bit later). Now you observe that the robot reaches the target joint angular position 
+									with q_desired =  (0,0,0,0,0,0,0) and stays there. Then repeat the same experiment with the "Mouse Drag Tool" to disturb the 
+									robot and observe two things: 1. it is a bit harder to drag the robot, and 2. if you stop disturbing the robot, it eventually 
+									reaches and stays at q_desired. By the way, you can change the q_desired in the following manner (code here again). At least, 
+									we can say that this is a bit satisfactory for making the robot stand. So, stop the program (ctrl + C). We see here again that
+									 the robot falls. It is the limitation of ros_controllers implementing the naive effort_controllers without realizing its effect
+									  when no control input is provided.</p>
+								<p>In Summary, we want to have gravity compensation, i.e., the robot should withstand the gravity forces when no control input is provided. 
+									So, the functionalities of the new controller must have the following:</p>
+								<ol>
+									<li>Hold the robot position by sending the nominal torque input to counter gravity or any external forces.</li>
+									<li>Switch these nominal inputs when another agent supplies the control inputs. (I assume the agent 
+										sends the appropriate control torque inputs to stabilize the system).</li>
+								</ol>
+							<hr class="major">
+							<h2>3. Solution</h2>
+							<p>One can infer that The easy-go solution is a switching controller strategy between the nominal torque inputs and control 
+								input sent by the external agent. So, How do we do this? We implement the same control policy as in the previous illustration
+								 but at the root of the ros2 controller interface. It solves the problem of robot instability as soon as the simulation is brought up. 
+								 It switches the control input when another agent sends it by subscribing to the other agent's commands.</p>
+							<h3>3.1 Behind the scenes so far</h3>
+							<p>Firstly, the program we ran earlier implements the inverse dynamics control, which can be synthesized through feedback 
+							linearization [cite]. This strategy is also called control-law partitioning. By the way, what is inverse dynamics (highlight box)?</p>
+							<p>To begin with, robotic manipulator dynamics are described by the Euler-Lagrangian modelling that consists of mass matrix, Coriolis 
+								and centrifugal forces matrix and gravitation torques induced by gravity forces (currently, I have ignored friction forces and external
+								 disturbances for ease of understanding) and see how can use this description of dynamics to control the robot as we desired.</p>
+
+							<p>Since we know that gravity forces are causing the issue, can we take u = g(q) to counteract the gravity forces? We will test this hypothesis
+								 by directly implementing it in simulation. Run the following program.</p>
+							<p> What did you observe?</p>
+							<p>You </p>
+
+							<hr class="major">
+							<h2>References</h2>
+							<ol>
+								<li> B. Siciliano, L. Sciavicco, L. Villani, and G. Oriolo, Robotics: Modelling, Planning and Control. Springer Publishing Company, Incorpo-
+								rated, 2010. </li>
+								<li></li>
+							</ol>
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+					<div id="sidebar">
+						<div class="inner">
+							<!-- Menu -->
+								<nav id="menu">
+									<header class="major">
+										<h2>Menu</h2>
+									</header>
+									<ul>
+										<li><a href="../index.html">home</a></li>
+										<li><a href="../blog.html">Blog</a></li>
+										<li><a href="../portfolio.html">Portfolio</a></li>
+										<li><a href="../about.html">About</a></li>
+									</ul>
+								</nav>
+
+								
+							<!-- Section -->
+								<section>
+									<header class="major">
+										<h2>Get in touch</h2>
+									</header>
+									<!--<p> Description</p>-->
+									<ul class="contact">
+										<li class="icon solid fa-envelope"><a href="mailto:shravistakashyap@gmail.com">shravistakashyap@gmail.com</a></li>
+									</ul>
+									<div class="mini-posts">
+										<article>
+											<a href="#" class="image"><img src="../images/logo_icon.png" alt="Shravista" /></a>
+										</article>
+                                    </div>
+								</section>
+							<!-- Footer -->
+								<footer id="footer">
+									<p class="copyright">Web design credits: <a href="https://html5up.net">HTML5 UP</a>.</p>
+								</footer>
+
+						</div>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/main.js"></script>
+
+	</body>
+</html>
