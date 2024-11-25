@@ -14,12 +14,22 @@
 		<link rel="stylesheet" href="../assets/highlight/styles/default.min.css">
         <script src="../assets/highlight.min.js"></script>
         <script>hljs.highlightAll();</script>
+		<script>
+			MathJax = {
+			  tex: {
+				inlineMath: [['$', '$'], ['\\(', '\\)']],
+				tags: 'all'
+			  }
+			  
+			};
+			</script>
+		<script src="../assets/mathjax/es5/tex-chtml-full.js" id="MathJax-script" async></script>
 	</head>
 	<body class="is-preload">
 
 		<!-- Wrapper -->
 			<div id="wrapper">
-
+				<!-- MAth JAX:: https://docs.mathjax.org/en/latest/web/start.html -->
 				<!-- Main -->
 					<div id="main">
 						<div class="inner">
@@ -37,7 +47,7 @@
 							<!-- Banner -->
 							<section>
 								<center><h1> Torque Controller for Robot Manipulators </h1> </center>
-								<p>18<sup>th</sup> November, 2024 </br></p>
+								<p>November 25, 2024 </br></p>
 							</section>
 							<hr class="major"/>
 							
@@ -73,69 +83,171 @@
 							<h2>2. Problems</h2>
 								<p>	To replicate the problems or solution from here onwards, I shall narrate the sequnce of steps to complete this quest. In addition 
 									I am considering KUKA LBR IIWA 14 R820 industrial robot manipulator for simulations. 
-									 Firstly, I recommend installing the following repo on <a href="https://github.com/Shravista/torque_controllers.git">torque controllers</a>. 
+									 Firstly, I recommend installing the following repo on <a href="https://github.com/Shravista/torque_controllers.git">torque controllers</a>. </p>
 									<ul><li>Requirements: Ubuntu 24.04, ROS 2: Jazzy Jalisco, 
 										<a href="https://control.ros.org/jazzy/doc/getting_started/getting_started.html#installation">ROS 2 controllers</a>, 
 										<a href="https://gazebosim.org/docs/harmonic/install_ubuntu/">Gazebo Harmonic</a>,
 										<code>gz-ros2-control</code></li>
+										<li><code>sudo apt install ros-$ROS_DISTRO-pinocchio</code></li>
 										<li> Clone the repository into the workspace</li>
 									</ul>
 									 <pre><code class="shell">git clone https://github.com/Shravista/torque_controllers.git </code></pre>
 									
 									 <ul><li>Compile the package with <code class="shell">colcon build --symlink-install</code>. Then, launch the bringup file</li></ul>
-									<pre><code>ros2 launch example_robots iiwa14_bringup_launch.py 'controller_name:=iiwa14_effort_controller'</code></pre></p>
-									Then, observe that the robot falls down immediately after the bring-up file is launched.	
-									<video width="640px" height="360" muted autoplay loop>
-										<source src="../videos/case1_falling.mp4" type="video/mp4"/> Your browser doesnot support video tag</video>
+									<pre><code>ros2 launch example_robots iiwa14_bringup_launch.py 'controller_name:=iiwa14_effort_controller'</code></pre>
+									<p>Then, observe that the robot falls down immediately after the bring-up file is launched.	</p>
+									<center><video width="1280px" height="720" muted autoplay loop>
+										<source src="../videos/case1_falling.mp4" type="video/mp4"/> Your browser doesnot support video tag`</center>
 									<!-- <span class="image fit"><img src=/"../images/blog/case1_falling.gif" alt="Case 1 Falling" /></span> -->
 
 									 <p>Let us try to use the "Mouse Drag Tool" (see the Animation below for instructions on how to enable it) to try lifting the robot by
 									  using Ctrl + right-click on the mouse and then start lifting the robot. You will observe here that the robot falls down again, 
-									  right? Well, this action is because no control input is provided, and gravitational forces are doing their duty. 
-									<video width="640px" height="360" controls>
+									  right? Well, this action is because no control input is provided, and gravitational forces are doing their duty. </p>
+									<center><video width="1280px" height="720" controls>
 										
-									  <source src="../videos/case1_mouseDrag.mp4" type="video/mp4"/> Your browser doesnot support video tag</video>
-									</p>
+									  <source src="../videos/case1_mouseDrag.mp4" type="video/mp4"/> Your browser doesnot support video tag</video></center>
+									
 								<p>Suppose we have an external agent that can supply appropriate torque commands to the robot to overcome the gravity forces and 
 									reach the target position. This is precisely what we can do by running the following program ( I will shed more light on what 
-									this program does in the background a bit later). Now you observe that the robot reaches the target joint angular position 
-									with q_desired =  (0,0,0,0,0,0,0) and stays there. Then repeat the same experiment with the "Mouse Drag Tool" to disturb the 
+									this program does in the background a bit later).</p>
+
+									<div id="idc_early"><pre><code>ros2 run torque_control_tests iDControl --ros-args --params-file &ltPath to src folder of Workspace&gt/torque_controllers/torque_control_tests/config/inverseDynamicsControl.yaml</code></pre></div>
+									
+									<p>Now you observe that the robot reaches the target joint angular position 
+									with $q_{\text{desired}} = [0,0,0,0,0,0,0]^\top$ and stays there. Then repeat the same experiment with the "Mouse Drag Tool" to disturb the 
 									robot and observe two things: 1. it is a bit harder to drag the robot, and 2. if you stop disturbing the robot, it eventually 
-									reaches and stays at q_desired. By the way, you can change the q_desired in the following manner (code here again). At least, 
+									reaches and stays at q_desired.</p>
+									<center><video width="1280px" height="720" controls>
+										
+										<source src="../videos/IDC_1.mp4" type="video/mp4"/> Your browser doesnot support video tag</video></center>
+									
+									<p>By the way, you can change the $q_\text{desired}$ in the following manner.</p> 
+									<pre><code>ros2 run torque_control_tests iDControl &lt enter the seven joint angle positions in degrees each separated by a space &gt --ros-args --params-file /home/shravista/muse_ws/src/torque_controllers/torque_control_tests/config/inverseDynamicsControl.yaml</code></pre>
+									<p>At least, 
 									we can say that this is a bit satisfactory for making the robot stand. So, stop the program (ctrl + C). We see here again that
 									 the robot falls. It is the limitation of ros_controllers implementing the naive effort_controllers without realizing its effect
 									  when no control input is provided.</p>
+									<center><video width="1280px" height="720" muted autoplay loop>
+										<source src="../videos/case_CTRLC.mp4" type="video/mp4"/>Your browser doesnot support video tag
+									</video></center>
 								<p>In Summary, we want to have gravity compensation, i.e., the robot should withstand the gravity forces when no control input is provided. 
 									So, the functionalities of the new controller must have the following:</p>
+								<h4>Goals:</h4>
 								<ol>
-									<li>Hold the robot position by sending the nominal torque input to counter gravity or any external forces.</li>
-									<li>Switch these nominal inputs when another agent supplies the control inputs. (I assume the agent 
-										sends the appropriate control torque inputs to stabilize the system).</li>
+									<li><div id="goal1">Hold the robot position by sending the nominal torque input to counter gravity or any external forces.</div></li>
+									<li><div id="goal2">Switch these nominal inputs to external torques supplies when another agent feeds the control inputs. (I assume the agent 
+										sends the appropriate control torque inputs to stabilize the system).</div></li>
 								</ol>
 							<hr class="major">
 							<h2>3. Solution</h2>
 							<p>One can infer that The easy-go solution is a switching controller strategy between the nominal torque inputs and control 
 								input sent by the external agent. So, How do we do this? We implement the same control policy as in the previous illustration
-								 but at the root of the ros2 controller interface. It solves the problem of robot instability as soon as the simulation is brought up. 
+								 but at the root of the ros2 controller interface. It solves the problem of robot inability of holding its position as soon as the simulation is brought up. 
 								 It switches the control input when another agent sends it by subscribing to the other agent's commands.</p>
 							<h3>3.1 Behind the scenes so far</h3>
 							<p>Firstly, the program we ran earlier implements the inverse dynamics control, which can be synthesized through feedback 
-							linearization [cite]. This strategy is also called control-law partitioning. By the way, what is inverse dynamics (highlight box)?</p>
-							<p>To begin with, robotic manipulator dynamics are described by the Euler-Lagrangian modelling that consists of mass matrix, Coriolis 
-								and centrifugal forces matrix and gravitation torques induced by gravity forces (currently, I have ignored friction forces and external
-								 disturbances for ease of understanding) and see how can use this description of dynamics to control the robot as we desired.</p>
-
-							<p>Since we know that gravity forces are causing the issue, can we take u = g(q) to counteract the gravity forces? We will test this hypothesis
+							linearization [<a href="#bruno">1</a>]. This strategy is also called control-law partitioning [<a href="#craig">2</a>]. By the way, what is inverse dynamics (highlight box)?</p>
+							<div class="box">
+								<h4>Forward Dynamics:</h4>
+								<p>It is to determine the generalized acceleration, velocity and position (joint accelaration, velocity, & position for manipulators) resulting from the applied external force or moment (joint torque). </p>
+								<h4>Inverse Dynamics:</h4>
+								<p>It is to determine the net external forces (joint torque) to generate the motion specified by accelarations, velocities and positions.</p>
+							</div>
+							<p>To begin with, robotic manipulator dynamics are described by the Euler-Lagrangian modelling that consists of $\boldsymbol{M}(\boldsymbol{q}) \in \mathbb{R}^{n \times n}$ is mass matrix, $\boldsymbol{C}(\boldsymbol{q}, \dot{\boldsymbol{q}}) \in \mathbb{R}^{n \times n}$ is Coriolis and centripetal matrix, $\boldsymbol{G}(\boldsymbol{q}) \in \mathbb{R}^n$ is gravity tprques induced by gravity vector
+								, (currently, I have ignored friction forces and external
+								 disturbances for ease of understanding) and see how can use this description of dynamics to control the robot as we des\bsired.</p>
+									\begin{equation}	
+								 \boldsymbol{M}(\boldsymbol{q})\ddot{\boldsymbol{q}} + \boldsymbol{C}(\boldsymbol{q},\dot{\boldsymbol{q}}) + \boldsymbol{G}(\boldsymbol{q}) = \boldsymbol{u}
+								 \label{eq:EOM}
+								 \end{equation}
+							<p>Since we know that gravity forces are one of the main factor to pull down the robot, can we take u = g(q) to counteract the gravity forces? Well! lets test this hypothesis
 								 by directly implementing it in simulation. Run the following program.</p>
+								 <pre><code>ros2 run torque_control_tests gravityCompensation --ros-args --params-file &ltPathToWorkspace&gt/torque_controllers/torque_control_tests/config/inverseDynamicsControl.yaml</code></pre>
+								<center><video controls  height="720px" width="1280px">
+									<source src="../videos/caseGravity.mp4" type="video/mp4"/>
+								</video></center>
 							<p> What did you observe?</p>
-							<p>You </p>
+							<p>You see here that the robot tries to reach goal very slowly to origin and the control input $\boldsymbol{u}=\boldsymbol{G}(\boldsymbol{q})$ 
+								cannot oppose those of internal or external forces.
+								It is because we have just pushed against the gravity forces, but what about the inertial 
+								forces or the Coriolis forces induced during motion or reaching the target? Therefore,
+								 one's task is to synthesize the control input ($\boldsymbol{u}$) to handle the external disturbances
+								  and take the robot from the current location to the target.</p> 
+							<p>In this regard, our earlier <a href="#idc_early">program</a> we have ran,
+								  utilizes the inverse dynamics controller $\eqref{eq:IDC}$ developed for this objective. 
+								  Let $\overline{\boldsymbol{q}} = \boldsymbol{q}-\boldsymbol{q}_\text{desired}$, </p>
+
+								  \begin{equation}
+								  	 \boldsymbol{u} = \boldsymbol{M}(\boldsymbol{q})\left (\ddot{\boldsymbol{q}}_\text{desired} -\boldsymbol{K}_p\overline{\boldsymbol{q}} -
+									   \boldsymbol{K}_d\dot{\overline{\boldsymbol{q}}}\right ) + \boldsymbol{C}(\boldsymbol{q},\dot{\boldsymbol{q}}) + \boldsymbol{G}(\boldsymbol{q}),
+									   \label{eq:IDC}
+								  \end{equation}
+							<p>where $\boldsymbol{K}_p,\ \boldsymbol{K}_d \in \mathbb{R}^{n\times n}$ are user-defined positive definite diagonal matrices. Further, larger the gains implies faster the convergence which becomes more evident in $\eqref{eq:asymp}$. Notice that if you had to substitute this controller $\eqref{eq:IDC}$ into $\eqref{eq:EOM}$ and by inherent properties of mass matrix, $\boldsymbol{M}(\boldsymbol{q})$ 
+								which is a symmetric and positive definite matrix, from $\eqref{eq:asymp}$ we can see that the current state exponentially converge to the desired value, i.e. $\overline{\boldsymbol{q}}\to\boldsymbol{q}_\text{desired}$ as $t\to\infty$.  </p>
+								\begin{flalign}
+								\ddot{\overline{\boldsymbol{q}}} + \boldsymbol{K}_d\dot{\overline{\boldsymbol{q}}} + \boldsymbol{K}_p\overline{\boldsymbol{q}} &= \boldsymbol{0}_n \notag \\
+								\implies \overline{\boldsymbol{q}} &= e^{-\boldsymbol{K}_pt}\boldsymbol{c}_1 + e^{-\boldsymbol{K}_dt}{\boldsymbol{c}}_2 \label{eq:asymp}
+								\end{flalign}
+								where $\boldsymbol{c}_1, \boldsymbol{c}_2 \in \mathbb{R}^n$ are some constants that takes some form resulting in solving the above ODE. Moreover, the analysis provides one more insight that this controller always works with the assumptions <i>No constraints on the system are imposed and controller can handle some level of bounded disturbances.</i>
+								<h3>3.2 Solution for <a href="#goal1">goals</a> </h3>
+								<p>But how can we even implement this strategy for goals <a href="#goal1">1</a> and <a href="#goal2">2</a>, as this strategy is meant for tracking 
+								both position and velocity? Instead, our goal <a href="#goal1">1</a>  is supposed to bring down the velocity to zero, and we don't care what position 
+								the robot is currently in as long as the current configuration is in its workspace.  Looking at the controller policy in $\eqref{eq:IDC}$, we can do either of the following:</p>
+								<ol>
+									<li>Make $\boldsymbol{K}_p = \boldsymbol{0}_{n\times n}$</li>
+									<li>substitute $\boldsymbol{q}_\text{desired}(t) = \boldsymbol{q}(t),\ \forall t$ i.e. position target is always the current position.</li>
+								</ol>
+								<p>Either of these two case results similar to $\eqref{eq:asymp}$, i.e. $\dot{\overline{\boldsymbol{q}}} = e^{-\boldsymbol{K}_dt}\dot{\boldsymbol{q}}(0)\implies \overline{\boldsymbol{q}} = \overline{\boldsymbol{q}}(0) - \boldsymbol{K}_d^{-1}e^{-\boldsymbol{K}_dt}\dot{\overline{\boldsymbol{q}}}(0) $.  </p>
+								<p>In simple language we are giving more weight for the controller to suppress the joint velocity to be zero all the time and don't care about what the  joint angular position should be. </p>
+								<p style="color:red"><b>Warning</b>: Since velocity goes to zero as time goes to infinity, one can observe the drift in position very slowly.
+									 However, the convergence rate on the velocity state can be altered through gains ($\boldsymbol{K}_d$).</p>
+							   <p>Now, let us come back to our simulation to understand this strategy.</p>
+							   <ul>
+								<li>Lets rerun the simulation setup and run the following program.</li>
+								<pre><code>ros2 launch example_robots iiwa14_bringup_launch.py 'controller_name:=iiwa14_effort_controller'</code></pre>
+								<pre><code>ros2 run torque_control_tests iDControl --ros-args --params-file &ltPath to src folder of Workspace&gt/torque_controllers/torque_control_tests/config/inverseDynamicsControl.yaml</code>
+								</pre></p>
+								<li>Run the rqt_reconfigure to change the gains of Kp to zero. </li>
+								<pre><code>ros2 run rqt_reconfigure rqt_reconfigure</code></pre>
+								<li>Use the "Mouse Drag Tool" to perturb the robot and see the effect.</li>
+							   </ul>
+							   <center><video width="1280px" height="720px" controls>
+								<source src="../videos/caseKp0.mp4" type="video/mp4"/>
+							   </video></center>
+							   <p>
+								It's cool, right? With this, we have achieved the first goal. But, if we stop the p{rogram again, we still face the robot's problem of losing its position 
+								rapidly. In addition, we still need to switch between the IDC controller with $\boldsymbol{K}_p = \text{diag}\{0,0,0,0,0,0,0\}$ and the new controller to satisfy the given goal. However, writing the
+								 same in every program and attaining our goals (<a href="#goal1">1</a>) & (<a href="#goal2">2</a>) is cumbersome. In this regard, one can utilize the C++ plugins that we are using indirectly through 
+								 ros2 controllers (effort_controllers/JointGroupEffortControllers).</p>
+
+								 <p> Since the existing implementation has limitations, as we discussed so far, I have developed 
+								 the controller plugin [<a href="#ros2control">4</a>, <a href="#torque_Control">5</a>] in ROS 2 that can effectively handle both goals. We will use the same launch file as previous one but with the newly updated controller plugins as shown below:
+
+							   </p>
+							   <pre><code>ros2 launch example_robots iiwa14_bringup_launch.py 'controller_name:=iiwa14_torque_controller'</code></pre>
+							   <p>Observe that in comparison to the previous plugin, the robot doesn't collapse and indeed stays in its initial position that was set in the 
+								<a href="https://github.com/Shravista/torque_controllers/blob/b82dbc2f246f9fec545249afd9ecd620d19eeeb3/example_robots/iiwa_description/urdf/iiwa14.urdf#L445C16-L445C20" target="_blank">URDF file</a>.
+								To demonstrate the goal (<a href="#goal2">2</a>), run the following program. This program is the same as before, but the only difference is that a reference trajectory is given instead of a position target. 
+								Finally, stop the program and observe that the robot has stayed on track because the controller plugin is loaded in the background; it ensures the robot keeps receiving the torque commands that hold its last known position when no external inputs are received.
+							</p>
+							<center><video width="1280px" height="720px" controls>
+								<source src="../videos/caseTorqueController.mp4" type="video/mp4"/> Not working
+							</video></center>
 
 							<hr class="major">
+							<!-- <h2>4. Conclusion</h2> -->
+							 Lastly, I encourage readers to explore more about the <a href="#torque_control">torque controllers</a> and let me know any issues when using this repo. Kindly raise the issues in the github and I will clear them as soon as possible.
+
+							<hr class="major">
+							
 							<h2>References</h2>
 							<ol>
-								<li> B. Siciliano, L. Sciavicco, L. Villani, and G. Oriolo, Robotics: Modelling, Planning and Control. Springer Publishing Company, Incorpo-
-								rated, 2010. </li>
-								<li></li>
+								<li> <div id="bruno">B. Siciliano, L. Sciavicco, L. Villani, and G. Oriolo, Robotics: Modelling, Planning and Control. Springer Publishing Company, Incorpo-
+								rated, 2010.</div> </li>
+								<li><div id="craig">Craig, J.J., 2006. Introduction to robotics. Pearson Educacion.</div></li>
+								<li><div id="ros2">S. Macenski, T. Foote, B. Gerkey, C. Lalancette, and W. Woodall, ‘Robot Operating System 2: Design, architecture, and uses in the wild’, Science Robotics, vol. 7, no. 66, p. eabm6074, 2022.</div></li>
+								<li><div id="ros2control">ROS 2 controls: https://control.ros.org/</div></li>
+								<li><div id="torque_Control">Shravista Kashyap. Torque Controller [Computer software]. https://github.com/Shravista/torque_controllers.git</div>	</li>
 							</ol>
 						</div>
 					</div>
