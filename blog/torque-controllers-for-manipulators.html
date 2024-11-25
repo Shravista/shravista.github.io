@@ -96,14 +96,14 @@
 									 <ul><li>Compile the package with <code class="shell">colcon build --symlink-install</code>. Then, launch the bringup file</li></ul>
 									<pre><code>ros2 launch example_robots iiwa14_bringup_launch.py 'controller_name:=iiwa14_effort_controller'</code></pre>
 									<p>Then, observe that the robot falls down immediately after the bring-up file is launched.	</p>
-									<center><video preload="auto" muted autoplay loop>
-										<source src="../videos/case1_falling.mp4" type="video/mp4; codecs="avc1.42E01E, mp4a.40.2a""/> Your browser doesnot support video tag`</center>
+									<center><video width="640px" height="360" muted autoplay loop>
+										<source src="../videos/case1_falling.mp4" type="video/mp4"/> Your browser doesnot support video tag`</center>
 									<!-- <span class="image fit"><img src=/"../images/blog/case1_falling.gif" alt="Case 1 Falling" /></span> -->
 
 									 <p>Let us try to use the "Mouse Drag Tool" (see the Animation below for instructions on how to enable it) to try lifting the robot by
 									  using Ctrl + right-click on the mouse and then start lifting the robot. You will observe here that the robot falls down again, 
 									  right? Well, this action is because no control input is provided, and gravitational forces are doing their duty. </p>
-									<center><video width="1280px" height="720" controls>
+									<center><video width="640px" height="360" controls>
 										
 									  <source src="../videos/case1_mouseDrag.mp4" type="video/mp4"/> Your browser doesnot support video tag</video></center>
 									
@@ -117,7 +117,7 @@
 									with $q_{\text{desired}} = [0,0,0,0,0,0,0]^\top$ and stays there. Then repeat the same experiment with the "Mouse Drag Tool" to disturb the 
 									robot and observe two things: 1. it is a bit harder to drag the robot, and 2. if you stop disturbing the robot, it eventually 
 									reaches and stays at q_desired.</p>
-									<center><video width="1280px" height="720" controls>
+									<center><video width="640px" height="360" controls>
 										
 										<source src="../videos/IDC_1.mp4" type="video/mp4"/> Your browser doesnot support video tag</video></center>
 									
@@ -127,7 +127,7 @@
 									we can say that this is a bit satisfactory for making the robot stand. So, stop the program (ctrl + C). We see here again that
 									 the robot falls. It is the limitation of ros_controllers implementing the naive effort_controllers without realizing its effect
 									  when no control input is provided.</p>
-									<center><video width="1280px" height="720" muted autoplay loop>
+									<center><video width="640px" height="360" muted autoplay loop>
 										<source src="../videos/case_CTRLC.mp4" type="video/mp4"/>Your browser doesnot support video tag
 									</video></center>
 								<p>In Summary, we want to have gravity compensation, i.e., the robot should withstand the gravity forces when no control input is provided. 
@@ -163,7 +163,7 @@
 							<p>Since we know that gravity forces are one of the main factor to pull down the robot, can we take u = g(q) to counteract the gravity forces? Well! lets test this hypothesis
 								 by directly implementing it in simulation. Run the following program.</p>
 								 <pre><code>ros2 run torque_control_tests gravityCompensation --ros-args --params-file &ltPathToWorkspace&gt/torque_controllers/torque_control_tests/config/inverseDynamicsControl.yaml</code></pre>
-								<center><video controls  height="720px" width="1280px">
+								<center><video controls  height="360px" width="640px">
 									<source src="../videos/caseGravity.mp4" type="video/mp4"/>
 								</video></center>
 							<p> What did you observe?</p>
@@ -211,7 +211,7 @@
 								<pre><code>ros2 run rqt_reconfigure rqt_reconfigure</code></pre>
 								<li>Use the "Mouse Drag Tool" to perturb the robot and see the effect.</li>
 							   </ul>
-							   <center><video width="1280px" height="720px" controls>
+							   <center><video width="640px" height="360px" controls>
 								<source src="../videos/caseKp0.mp4" type="video/mp4"/>
 							   </video></center>
 							   <p>
@@ -230,7 +230,7 @@
 								To demonstrate the goal (<a href="#goal2">2</a>), run the following program. This program is the same as before, but the only difference is that a reference trajectory is given instead of a position target. 
 								Finally, stop the program and observe that the robot has stayed on track because the controller plugin is loaded in the background; it ensures the robot keeps receiving the torque commands that hold its last known position when no external inputs are received.
 							</p>
-							<center><video width="1280px" height="720px" controls>
+							<center><video width="640px" height="360px" controls>
 								<source src="../videos/caseTorqueController.mp4" type="video/mp4"/> Not working
 							</video></center>
 
