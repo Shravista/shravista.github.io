@@ -48,6 +48,7 @@
 							<section>
 								<center><h1> Torque Controller for Robot Manipulators </h1> </center>
 								<p>November 25, 2024 </br></p>
+<p> This post explains the importance of torque-based controllers that send torque/force commands for robotic arms and illustrates the difficulty of using them for any robotic arm through ROS 2 and Gazebo Sim. It starts by demonstrating the challenges of using the existing C++ plugins for ros2 controllers. Then, with the aid of classical control theory, this post illustrates how to bridge the gap. Consequently, the robotic arm doesn't collapse to the ground. It holds its position through torque commands generated internally and switches to an external input supply when another node sends the torque command.</p>
 							</section>
 							<hr class="major"/>
 							
