@@ -184,12 +184,12 @@
 									   \label{eq:IDC}
 								  \end{equation}
 							<p>where $\boldsymbol{K}_p,\ \boldsymbol{K}_d \in \mathbb{R}^{n\times n}$ are user-defined positive definite diagonal matrices. Further, larger the gains implies faster the convergence which becomes more evident in $\eqref{eq:asymp}$. Notice that if you had to substitute this controller $\eqref{eq:IDC}$ into $\eqref{eq:EOM}$ and by inherent properties of mass matrix, $\boldsymbol{M}(\boldsymbol{q})$ 
-								which is a symmetric and positive definite matrix, from $\eqref{eq:asymp}$ we can see that the current state exponentially converge to the desired value, i.e. $\overline{\boldsymbol{q}}\to\boldsymbol{q}_\text{desired}$ as $t\to\infty$.  </p>
+								which is a symmetric and positive definite matrix, from $\eqref{eq:asymp}$ we can see that the current state exponentially converge to the desired value, i.e. ${\boldsymbol{q}}\to\boldsymbol{q}_\text{desired}$ as $t\to\infty$.  </p>
 								\begin{flalign}
 								\ddot{\overline{\boldsymbol{q}}} + \boldsymbol{K}_d\dot{\overline{\boldsymbol{q}}} + \boldsymbol{K}_p\overline{\boldsymbol{q}} &= \boldsymbol{0}_n \notag \\
 								\implies \overline{\boldsymbol{q}} &= e^{-\boldsymbol{K}_pt}\boldsymbol{c}_1 + e^{-\boldsymbol{K}_dt}{\boldsymbol{c}}_2 \label{eq:asymp}
 								\end{flalign}
-								where $\boldsymbol{c}_1, \boldsymbol{c}_2 \in \mathbb{R}^n$ are some constants that takes some form resulting in solving the above ODE. Moreover, the analysis provides one more insight that this controller always works with the assumptions <i>No constraints on the system are imposed and controller can handle some level of bounded disturbances.</i>
+								where $\boldsymbol{c}_1, \boldsymbol{c}_2 \in \mathbb{R}^n$ are some constants that take some form resulting in solving the above ODE. Moreover, the analysis provides one more insight that this controller always works with the assumptions <i>No constraints on the system are imposed and controller can handle some level of bounded disturbances.</i>
 								<h3>3.2 Solution for <a href="#goal1">goals</a> </h3>
 								<p>But how can we even implement this strategy for goals <a href="#goal1">1</a> and <a href="#goal2">2</a>, as this strategy is meant for tracking 
 								both position and velocity? Instead, our goal <a href="#goal1">1</a>  is supposed to bring down the velocity to zero, and we don't care what position 
