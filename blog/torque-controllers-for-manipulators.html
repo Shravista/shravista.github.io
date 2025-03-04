@@ -117,7 +117,7 @@
 									<p>Now you observe that the robot reaches the target joint angular position 
 									with $q_{\text{desired}} = [0,0,0,0,0,0,0]^\top$ and stays there. Then repeat the same experiment with the "Mouse Drag Tool" to disturb the 
 									robot and observe two things: 1. it is a bit harder to drag the robot, and 2. if you stop disturbing the robot, it eventually 
-									reaches and stays at q_desired.</p>
+									reaches and stays at $q_{\text{desired}}$.</p>
 									<center><video width="640px" height="360" controls>
 										
 										<source src="../videos/IDC_1.mp4" type="video/mp4"/> Your browser doesnot support video tag</video></center>
@@ -156,12 +156,12 @@
 							</div>
 							<p>To begin with, robotic manipulator dynamics are described by the Euler-Lagrangian modelling that consists of $\boldsymbol{M}(\boldsymbol{q}) \in \mathbb{R}^{n \times n}$ is mass matrix, $\boldsymbol{C}(\boldsymbol{q}, \dot{\boldsymbol{q}}) \in \mathbb{R}^{n \times n}$ is Coriolis and centripetal matrix, $\boldsymbol{G}(\boldsymbol{q}) \in \mathbb{R}^n$ is gravity tprques induced by gravity vector
 								, (currently, I have ignored friction forces and external
-								 disturbances for ease of understanding) and see how can use this description of dynamics to control the robot as we des\bsired.</p>
+								 disturbances for ease of understanding) and see how can use this description of dynamics to control the robot as we desired.</p>
 									\begin{equation}	
 								 \boldsymbol{M}(\boldsymbol{q})\ddot{\boldsymbol{q}} + \boldsymbol{C}(\boldsymbol{q},\dot{\boldsymbol{q}}) + \boldsymbol{G}(\boldsymbol{q}) = \boldsymbol{u}
 								 \label{eq:EOM}
 								 \end{equation}
-							<p>Since we know that gravity forces are one of the main factor to pull down the robot, can we take u = g(q) to counteract the gravity forces? Well! lets test this hypothesis
+							<p>Since we know that gravity forces are one of the main factors to pull down the robot, can we take u = g(q) to counteract the gravity forces? Well! lets test this hypothesis
 								 by directly implementing it in simulation. Run the following program.</p>
 								 <pre><code>ros2 run torque_control_tests gravityCompensation --ros-args --params-file &ltPathToWorkspace&gt/torque_controllers/torque_control_tests/config/inverseDynamicsControl.yaml</code></pre>
 								<center><video controls  height="360px" width="640px">
@@ -175,7 +175,7 @@
 								 one's task is to synthesize the control input ($\boldsymbol{u}$) to handle the external disturbances
 								  and take the robot from the current location to the target.</p> 
 							<p>In this regard, our earlier <a href="#idc_early">program</a> we have ran,
-								  utilizes the inverse dynamics controller $\eqref{eq:IDC}$ developed for this objective. 
+								  utilizes the inverse dynamics controller $\eqref{eq:IDC}$ developed for this objective (see the Fig. for more details). 
 								  Let $\overline{\boldsymbol{q}} = \boldsymbol{q}-\boldsymbol{q}_\text{desired}$, </p>
 
 								  \begin{equation}
@@ -183,6 +183,7 @@
 									   \boldsymbol{K}_d\dot{\overline{\boldsymbol{q}}}\right ) + \boldsymbol{C}(\boldsymbol{q},\dot{\boldsymbol{q}}) + \boldsymbol{G}(\boldsymbol{q}),
 									   \label{eq:IDC}
 								  \end{equation}
+								<img src="../images/blog/IDArchitecture.png" alt="IDArchitecture.png">
 							<p>where $\boldsymbol{K}_p,\ \boldsymbol{K}_d \in \mathbb{R}^{n\times n}$ are user-defined positive definite diagonal matrices. Further, larger the gains implies faster the convergence which becomes more evident in $\eqref{eq:asymp}$. Notice that if you had to substitute this controller $\eqref{eq:IDC}$ into $\eqref{eq:EOM}$ and by inherent properties of mass matrix, $\boldsymbol{M}(\boldsymbol{q})$ 
 								which is a symmetric and positive definite matrix, from $\eqref{eq:asymp}$ we can see that the current state exponentially converge to the desired value, i.e. ${\boldsymbol{q}}\to\boldsymbol{q}_\text{desired}$ as $t\to\infty$.  </p>
 								\begin{flalign}
