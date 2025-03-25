@@ -175,7 +175,7 @@
 								 one's task is to synthesize the control input ($\boldsymbol{u}$) to handle the external disturbances
 								  and take the robot from the current location to the target.</p> 
 							<p>In this regard, our earlier <a href="#idc_early">program</a> we have ran,
-								  utilizes the inverse dynamics controller $\eqref{eq:IDC}$ developed for this objective (see the Fig. for more details). 
+								  utilizes the inverse dynamics controller $\eqref{eq:IDC}$ and Figure <a href="#idArch">1</a> developed for this objective (see the Fig. for more details). 
 								  Let $\overline{\boldsymbol{q}} = \boldsymbol{q}-\boldsymbol{q}_\text{desired}$, </p>
 
 								  \begin{equation}
@@ -183,6 +183,11 @@
 									   \boldsymbol{K}_d\dot{\overline{\boldsymbol{q}}}\right ) + \boldsymbol{C}(\boldsymbol{q},\dot{\boldsymbol{q}}) + \boldsymbol{G}(\boldsymbol{q}),
 									   \label{eq:IDC}
 								  \end{equation}
+
+								<div class="col-9 col-12-small" id="idArch">
+									<span class="image fit"><figure><img src="../images/blog/IDArchitecture.png" alt="architecture" />
+										<figcaption>Figure 1. Control Architecture of Inverse Dynamics Controller [<a href="#bruno">1</a>]</figcaption></figure></span>
+								</div>
 								
 							<p>where $\boldsymbol{K}_p,\ \boldsymbol{K}_d \in \mathbb{R}^{n\times n}$ are user-defined positive definite diagonal matrices. Further, larger the gains implies faster the convergence which becomes more evident in $\eqref{eq:asymp}$. Notice that if you had to substitute this controller $\eqref{eq:IDC}$ into $\eqref{eq:EOM}$ and by inherent properties of mass matrix, $\boldsymbol{M}(\boldsymbol{q})$ 
 								which is a symmetric and positive definite matrix, from $\eqref{eq:asymp}$ we can see that the current state exponentially converge to the desired value, i.e. ${\boldsymbol{q}}\to\boldsymbol{q}_\text{desired}$ as $t\to\infty$.  </p>
@@ -223,10 +228,15 @@
 								 ros2 controllers (effort_controllers/JointGroupEffortControllers).</p>
 
 								 <p> Since the existing implementation has limitations, as we discussed so far, I have developed 
-								 the controller plugin [<a href="#ros2control">4</a>, <a href="#torque_Control">5</a>] in ROS 2 that can effectively handle both goals. We will use the same launch file as previous one but with the newly updated controller plugins as shown below:
+								 the controller plugin [<a href="#ros2control">4</a>, <a href="#torque_Control">5</a>] in ROS 2 that can effectively handle both goals (See the Figure <a href="#mIDarch">2</a> We will use the same launch file as previous one but with the newly updated controller plugins as shown below:
 
 							   </p>
+							   <div class="col-9 col-12-small" id="mIDarch">
+								<span class="image fit"><figure><img src="../images/blog/IDArchitecture_switch-based.png" alt="architecture" />
+									<figcaption>Figure 2. Switched-based Control Architecture</figcaption></figure></span>
+							</div>
 							   <pre><code>ros2 launch example_robots iiwa14_bringup_launch.py 'controller_name:=iiwa14_torque_controller'</code></pre>
+
 							   <p>Observe that in comparison to the previous plugin, the robot doesn't collapse and indeed stays in its initial position that was set in the 
 								<a href="https://github.com/Shravista/torque_controllers/blob/b82dbc2f246f9fec545249afd9ecd620d19eeeb3/example_robots/iiwa_description/urdf/iiwa14.urdf#L445C16-L445C20" target="_blank">URDF file</a>.
 								To demonstrate the goal (<a href="#goal2">2</a>), run the following program. This program is the same as before, but the only difference is that a reference trajectory is given instead of a position target. 
