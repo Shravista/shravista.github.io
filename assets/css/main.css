@@ -108,6 +108,19 @@ body {
     -ms-transition: none !important;
     transition: none !important; }
 
+body, p, h1, h2, h3, h4, h5, h6, a, li, span, td, th, label {
+    font-family: 'Times New Roman', Times, serif !important;
+    font-size: 16pt !important;
+}
+h1 { font-family: 'Times New Roman', Times, serif !important; font-size: 36pt !important; }
+h2 { font-family: 'Times New Roman', Times, serif !important; font-size: 28pt !important; }
+h3 { font-family: 'Times New Roman', Times, serif !important; font-size: 22pt !important; }
+h4 { font-family: 'Times New Roman', Times, serif !important; font-size: 18pt !important; }
+
+/* protect MathJax */
+.MathJax, .MathJax_Display, .mjx-chtml {
+    font-family: inherit !important;
+}
 /* Type */
 body, input, select, textarea {
   color: #141516;
