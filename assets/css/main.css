@@ -16,7 +16,7 @@ tfoot, thead, tr, th, td, article, asidfonte,
 canvas, details, embed, figure, figcaption,
 footer, header, hgroup, menu, nav, output, ruby,
 section, summary, time, mark, audio, video {
-  margin: 0;font
+  margin: 0;
   padding: 0;
   border: 0;
   font-size: 100%;
@@ -2349,21 +2349,26 @@ button,
         max-width: 100% !important;
     }
 
+    /* For all browsers */
     #banner .image.object {
         width: 100% !important;
-        height: auto !important;
+        height: 300px !important;       /* adjust this value to fit your image */
         max-height: none !important;
-        overflow: hidden !important;    /* prevents image bleeding outside */
+        overflow: hidden !important;
         display: block !important;
+        background-size: contain !important;      /* safari fix - show full image */
+        background-position: center top !important;
+        background-repeat: no-repeat !important;
     }
 
+    /* For non-Safari browsers */
     #banner .image.object img {
         position: relative !important;
         width: 100% !important;
         height: auto !important;
-        object-fit: unset !important;
-        display: block !important;      /* removes phantom bottom space */
-        margin: 0 !important;           /* removes any default margins */
+        object-fit: contain !important;
+        display: block !important;
+        margin: 0 auto !important;
     }
 }
 
