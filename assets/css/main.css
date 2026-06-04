@@ -2339,6 +2339,9 @@ button,
 
     /* ... all the existing main.css code above ... */
 
+#banner {
+    align-items: center !important;
+}
 /* Mobile fix for banner image */
 @media screen and (max-width: 736px) {
     #banner {
