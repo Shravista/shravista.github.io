@@ -16,7 +16,7 @@ tfoot, thead, tr, th, td, article, asidfonte,
 canvas, details, embed, figure, figcaption,
 footer, header, hgroup, menu, nav, output, ruby,
 section, summary, time, mark, audio, video {
-  margin: 0;
+  margin: 0;font
   padding: 0;
   border: 0;
   font-size: 100%;
@@ -2341,22 +2341,29 @@ button,
 
 /* Mobile fix for banner image */
 @media screen and (max-width: 736px) {
+    #banner {
+        flex-direction: column !important;
+    }
+
+    #banner .content {
+        max-width: 100% !important;
+    }
+
     #banner .image.object {
         width: 100% !important;
         height: auto !important;
         max-height: none !important;
-        overflow: hidden !important;
+        overflow: hidden !important;    /* prevents image bleeding outside */
         display: block !important;
     }
 
     #banner .image.object img {
         position: relative !important;
-        width: 60% !important;          /* reduce from 100% */
-        max-width: 300px !important;    /* cap the max size */
+        width: 100% !important;
         height: auto !important;
         object-fit: unset !important;
-        display: block !important;
-        margin: 0 auto !important;      /* center the image */
+        display: block !important;      /* removes phantom bottom space */
+        margin: 0 !important;           /* removes any default margins */
     }
 }
 
