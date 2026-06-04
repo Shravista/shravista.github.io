@@ -2340,7 +2340,7 @@ button,
     /* ... all the existing main.css code above ... */
 
 /* Mobile fix for banner image */
-@media screen and (max-width: 980px) {
+@media screen and (max-width: 736px) {
     #banner {
         flex-direction: column !important;
     }
@@ -2351,10 +2351,18 @@ button,
 
     #banner .image.object {
         width: 100% !important;
-        height: 250px !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: hidden !important;    /* prevents image bleeding outside */
+        display: block !important;
     }
 
     #banner .image.object img {
-        object-fit: contain !important;
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        object-fit: unset !important;
+        display: block !important;      /* removes phantom bottom space */
+        margin: 0 !important;           /* removes any default margins */
     }
 }
