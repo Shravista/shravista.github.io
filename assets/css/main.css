@@ -2355,6 +2355,7 @@ button,
     position: absolute;
     top: 0;
     left: 0;
+    margin-left: -2em !important; /* adjust this value to fit your layout */
     width: 100% !important;
     height: 100% !important;
 }
