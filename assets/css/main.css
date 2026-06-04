@@ -2404,10 +2404,8 @@ button,
     h4 { font-size: 14pt !important; }
 }
 
-@media screen and (max-width: 736px) {
-    /* ... your existing mobile fixes ... */
+/* @media screen and (max-width: 736px) {
 
-    /* Video fix for mobile */
     .video-wrapper {
         width: 100% !important;
         max-width: 100% !important;
@@ -2419,12 +2417,10 @@ button,
         height: 100% !important;
         max-width: 100% !important;
     }
-
-    /* Fix any raw iframes not wrapped in video-wrapper */
     iframe {
         width: 100% !important;
         max-width: 100% !important;
         height: auto !important;
         min-height: 200px !important;
     }
-}
+} */
