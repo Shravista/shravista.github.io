@@ -2336,3 +2336,25 @@ button,
     border-top: 0;
     margin-top: 0;
     padding-top: 0; }
+
+    /* ... all the existing main.css code above ... */
+
+/* Mobile fix for banner image */
+@media screen and (max-width: 980px) {
+    #banner {
+        flex-direction: column !important;
+    }
+
+    #banner .content {
+        max-width: 100% !important;
+    }
+
+    #banner .image.object {
+        width: 100% !important;
+        height: 250px !important;
+    }
+
+    #banner .image.object img {
+        object-fit: contain !important;
+    }
+}
